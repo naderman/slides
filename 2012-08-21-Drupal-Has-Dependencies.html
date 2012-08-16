@@ -476,6 +476,63 @@ $loader->add('My\Test', __DIR__);
             </div>
         </div>
 
+        <!-- =============== DRUPAL =================  -->
+        <div class="slide big">
+            <div class="vcenter">
+                <h1><em>Drupal</em> and Composer</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h2><em>Drupal 8</em></h2>
+                <ul>
+                    <li>Uses Composer to handle...
+                        <ul>
+                            <li>Symfony</li>
+                            <li>Doctrine Common</li>
+                            <li>Twig</li>
+                        </ul>
+                    </li>
+                    <li><em>core/composer.json</em></li>
+                    <li>Dependencies committed directly into Drupal</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2><em>Drush</em> Composer</h2>
+            <p>Drush wrapper to run Composer commands <a href="http://drupal.org/project/composer">http://dgo.to/composer</a></p>
+            <pre class="brush: bash">
+$ drush dl composer
+$ drush composer install
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h2><em>Drush</em> Composer Hooks</h2>
+            <p>Drush Composer processes <em>composer.json</em> when modules are installed</p>
+            <pre class="brush: bash">
+$ drush dl less
+Project less (7.x-2.x-dev) downloaded to sites/all/modules/less.
+Installing dependencies
+  - Installing leafo/lessphp (v0.3.5)
+    Downloading: 100%
+
+Writing lock file
+Generating autoload files
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h2><em>Drupal</em> Composer Autoload</h2>
+            <p>Module to integrate your module with Composer <a href="http://drupal.org/project/composer_autoload">http://dgo.to/composer_autoload</a></p>
+            <ul>
+                <li>Automatically includes any <em>autoload.php</em> files</li>
+                <li>Caches the list of files</li>
+            </ul>
+        </div>
+
         <!-- =============== CONCLUSION =================  -->
         <div class="slide big" data-background="/slippy/slides/2012-06-07-Composer/wheel.jpg">
             <div class="">
