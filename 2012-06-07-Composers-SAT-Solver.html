@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Composer's SAT Solver</title>
+        <meta name="author" content="Nils Adermann" />
+        <meta name="email" content="naderman@naderman.de" />
+        <meta name="date" content="2012-06-07" />
+        <meta name="venue" content="Symfony Live Paris 2012" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- Slippy core file and dependencies -->
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="jquery.history.js"></script>
+        <script type="text/javascript" src="slippy.js"></script>
+        <!-- Slippy structural styles -->
+        <link type="text/css" rel="stylesheet" href="slippy.css"/>
+        <!-- Slippy theme -->
+        <link type="text/css" rel="stylesheet" href="slippy-pure.css"/>
+        <!-- Syntax highlighting core file  -->
+        <script type="text/javascript" src="highlighter/shCore.js"></script>
+        <!-- Syntax highlighting brushes, remove those you don't need -->
+        <script type="text/javascript" src="highlighter/shBrushJScript.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPhp.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushXml.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPlain.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushBash.js"></script>
+        <!-- Syntax highlighting styles-->
+        <link type="text/css" rel="stylesheet" href="highlighter/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="highlighter/shThemeEclipse.css"/>
+        <!-- Slippy init code -->
+        <script type="text/javascript">
+            $(function() {
+                SyntaxHighlighter.all();
+                $(".slide").slippy({
+                    animLen: 0
+                });
+            });
+        </script>
+        <link href="http://fonts.googleapis.com/css?family=Cabin:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            body {
+                font-family: 'Cabin', 'Tahoma', sans-serif;
+                background: #fff;
+                background-color:#ffffff;
+                background-image: -webkit-radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+                background-image: -moz-radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+                background-image: -o-radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+                background-image: -ms-radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+                background-image: radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+            }
+            div.syntaxhighlighter {
+                background: #aaa !important;
+            }
+            .alertWrapper {
+                top: 5%;
+                bottom: auto;
+            }
+            .footer {
+                margin-bottom: 0px;
+            }
+            body.slide-1 .slideDisplay, body.slide-background .slideDisplay {
+                display: none;
+            }
+            body.slide-1 .footer {
+                display: none;
+            }
+            .slideDisplay {
+                color: #eee;
+            }
+            a, a:link {
+                text-decoration: none;
+            }
+            .slide.left h1 {
+                text-align: left;
+                font-size: 1.2em;
+            }
+            h1 {
+                line-height: 130%;
+            }
+            ul li {
+                line-height: 130%;
+            }
+            p {
+                margin-bottom: .7em;
+            }
+            img.round {
+                border-radius: 10px;
+            }
+            .outline {
+                color: #000;
+                text-shadow: 0 0 3px #fff;
+            }
+            .reverse {
+                color: #fff;
+                text-shadow: 0 0 3px #000;
+            }
+            .output {
+                display: block;
+                background: #ffd;
+                padding: .5em;
+                white-space: pre;
+            }
+            .slide em {
+                color: #00b;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Composer's<br/><em>SAT Solver</em></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Boolean Algebra</h1>
+                <ul>
+                    <li>A &or; (B &or; C) = (A &or; B) &or; C</li>
+                    <li>A &or; B = B &or; A</li>
+                    <li>A &or; (A &and; B) = A</li>
+                    <li>A &or; (B &and; C) = (A &or; B) &and; (A &or; C)</li>
+                    <li>A &or; &not;A = TRUE</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Conjunctive Normal Form</h1>
+                <ul>
+                    <li>(A &or; B) &and; (&not;B &or; C &or; &not;D) &and; (D &or; &not;E)</li>
+                    <li>(A &or; B) is a clause</li>
+                    <li>A, B, &not;B, C, D, &not;D, E are literals</li>
+                </ul>
+                <p>Every propositional formula can be converted into an equivalent formula that is in CNF. This transformation is based on rules about logical equivalences: the double negative law, De Morgan's laws, and the distributive law.</p>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Boolean <em>SAT</em>isfiability Problem</h1>
+                <p>The problem of determining if the variables of a given Boolean formula can be assigned in such a way as to make the formula evaluate to TRUE</p>
+                <p>Examples</p>
+                <ul>
+                    <li>(A &and; B) is satisfiable with A=TRUE and B=TRUE.</li>
+                    <li>(A &and; B &and; &not;A) is not satisfiable because A cannot be both TRUE and FALSE.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>Big O Notation</h1>
+                <p>O(n)</p>
+                <pre class="brush: php">
+foreach ($literals as $literal) { something }
+                </pre>
+                <p>O(n<span style="vertical-align:super;font-size:75%;">2</span>)</p>
+                <pre class="brush: php">
+foreach ($literals as $literal) { foreach ($literals $otherLiteral) { if ($literal > $otherLiteral) { something } } }
+                </pre>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Exponential growth</h1>
+                <p>Time per operation: 1ms</p>
+                <ul>
+                    <li>
+                        n = 10<br />
+                        t &middot; n<span style="vertical-align:super;font-size:75%;">2</span> = 100ms<br />
+                        t &middot; 2<span style="vertical-align:super;font-size:75%;">n</span> = 1s
+                    </li>
+                    <li>
+                        n = 50<br />
+                        t &middot; n<span style="vertical-align:super;font-size:75%;">2</span> = 2500ms<br />
+                        t &middot; 2<span style="vertical-align:super;font-size:75%;">n</span> = 35702 Years
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>Complexity Classes</h1>
+                <img src="/~naderman/slippy/slides/2012-06-07-Composer/Complexity_subsets_pspace.svg" alt="Complexity Hierarchy" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Dependencies as a <em>SAT Problem</em></h1>
+                <ul>
+                    <li>One Version of one Project is one literal</li>
+                    <li>Install A-1.0 <em>(A-1.0)</em></li>
+                    <li>Remove A-1.0 <em>(&not;A-1.0)</em></li>
+                    <li>A-1.0 requires B-1.0 <em>(&not;A-1.0 &or; B-1.0)</em></li>
+                    <li>A-1.0 conflicts with B-1.0 <em>(&not;A-1.0 &or; &not;B-1.0)</em></li>
+                    <li>C-1.0 provides B-1.0, A-1.0 requires B-1.0 <em>(&not;A-1.0 &or; B-1.0 &or; C-1.0)</em></li>
+                    <li>C-1.0 replaces B-1.0, A-1.0 requires B-1.0 <em>(&not;C-1.0 &or; &not;B-1.0) &and; (&not;A-1.0 &or; B-1.0 &or; C-1.0)</em></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>Composer's SAT Solver: <em>WatchGraph</em></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>Composer's SAT Solver: <em>Assertions &amp; Propagation</em></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>Composer's SAT Solver: <em>Free Choices &amp; Branches</em></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Thank you.</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Questions?</h1>
+                <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
+                <br/>
+                <h1>Feedback:</h1>
+                <h1><a href="http://joind.in/6669">http://joind.in/6669</a></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>Package Management in PHP</h1>
+                <a href="http://example.preinheimer.com/phpunit.html"><img class="noscale round" src="/slides/2012-01-31%20Composer/pear.png" alt="" /></a>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div style="text-align: center;">
+                <h1>The Composer <em>Ecosystem</em></h1>
+                <a href="https://github.com/composer">github.com/composer</a>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>The Composer Ecosystem</h1>
+                <h2><em>Composer</em> - CLI Tool</h2>
+                <ul>
+                    <li>Easy to use</li>
+                    <li>Installs deps per-project</li>
+                    <li>Flexible and embeddable</li>
+                    <li>Encourages best practices (PSRs, SPDX, semver)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>The Composer Ecosystem</h1>
+                <h2><em>Packagist</em> - Package Repository</h2>
+                <ul>
+                    <li>Aggregates PHP libraries</li>
+                    <li>Open to all OSS projects</li>
+                    <li>Feeds on VCS (git, hg, svn) repositories</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big" data-background="/slides/2012-01-31%20Composer/packagist.png">
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>The Composer Ecosystem</h1>
+                <h2><em>Satis</em> - Micro Repository</h2>
+                <ul>
+                    <li>Minimalistic (Pirum-like)</li>
+                    <li>Useful for closed source code</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide" data-background="/slides/2012-01-31%20Composer/tweets.png">
+        </div>
+
+        <!-- =============== USAGE =================  -->
+        <div class="slide big" data-background="/slides/2012-01-31%20Composer/usage.jpg">
+            <div>
+                <h1 style="text-align: right" class="outline">Usage Instructions</h1>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1><em>Using</em> a Composed Project</h1>
+            <pre class="brush: bash; gutter: false">
+git clone https://github.com/symfony/standard-edition myproject
+            </pre>
+            <code class="output">Cloning into myproject...</code>
+            <pre class="brush: bash; gutter: false">
+cd myproject/
+            </pre>
+            <pre class="brush: bash; gutter: false">
+curl -s http://getcomposer.org/installer | php
+            </pre>
+            <code class="output"><span style="color:green;">All settings correct for using Composer
+Composer successfully installed to: /home/bob/myproject/composer.phar</span>
+
+<span style="color:orange;">Use it: php composer.phar</span></code>
+        </div>
+
+        <div class="slide">
+            <h1><em>Using</em> a Composed Project</h1>
+            <pre class="brush: bash; gutter: false">
+php composer.phar install
+            </pre>
+            <code class="output"><span style="color:green;">Installing from lock file</span>
+  - Package <span style="color:green;">twig/extensions</span> (<span style="color:orange;">dev-master</span>)
+    Downloading
+    Unpacking archive
+    Cleaning up
+
+[...]
+
+  - Package <span style="color:green;">twig/twig</span> (<span style="color:orange;">1.8.0</span>)
+    Downloading
+    Unpacking archive
+    Cleaning up
+
+  - Package <span style="color:green;">symfony/symfony</span> (<span style="color:orange;">dev-master</span>)
+    Downloading
+    Unpacking archive
+    Cleaning up
+
+<span style="color:green;">Generating autoload files</span></code>
+        </div>
+
+        <div class="slide">
+            <h1><em>Using</em> a Composed Project</h1>
+            <pre class="brush: plain">
+vendor/
+    autoload.php
+    composer/
+    monolog/
+        monolog/
+    symfony/
+        symfony/
+        monolog-bundle/
+    twig/
+        twig/
+        extensions/
+    [...]
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1><em>One-line</em> Project Initialization</h1>
+            <pre class="brush: bash; gutter: false">
+php composer.phar create-project &lt;package&gt; [&lt;dir&gt;] [&lt;version&gt;]
+
+php composer.phar create-project symfony/framework-standard-edition
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1><em>Downloading</em> Project Dependencies</h1>
+            <h2>composer.json</h2>
+            <ul>
+                <li>Located in project root directory</li>
+                <li>Defines dependencies</li>
+            </ul>
+            <pre class="brush: js">
+{
+    &quot;require&quot;: {
+        &quot;silex/silex&quot;: &quot;&gt;=1.0.0-dev&quot;,
+        &quot;symfony/finder&quot;: &quot;2.1-dev&quot;,
+        &quot;twig/twig&quot;: &quot;1.*&quot;,
+        &quot;predis/service-provider&quot;: &quot;dev-master&quot;
+    },
+    &quot;require-dev&quot;: {
+        &quot;mikey179/vfsStream&quot;: &quot;*&quot;
+    }
+}
+            </pre>
+            <p>Source install: With <code>install --prefer-source</code> it clones/checks out the code.</p>
+        </div>
+
+        <div class="slide">
+            <h1><em>Creating</em> a Package Definition</h1>
+            <pre class="brush: js">
+{
+    &quot;name&quot;: &quot;predis/predis&quot;,
+    &quot;type&quot;: &quot;library&quot;,
+    &quot;description&quot;: &quot;Flexible and feature-complete Redis client&quot;,
+    &quot;keywords&quot;: [&quot;nosql&quot;, &quot;redis&quot;, &quot;predis&quot;],
+    &quot;homepage&quot;: &quot;http://github.com/nrk/predis&quot;,
+    &quot;license&quot;: &quot;MIT&quot;,
+    &quot;authors&quot;: [
+        {
+            &quot;name&quot;: &quot;Daniele Alessandri&quot;,
+            &quot;email&quot;: &quot;suppakilla@gmail.com&quot;,
+            &quot;homepage&quot;: &quot;http://clorophilla.net&quot;
+        }
+    ],
+    &quot;require&quot;: {
+        &quot;php&quot;: &quot;&gt;=5.3.0&quot;
+    },
+    &quot;autoload&quot;: {
+        &quot;psr-0&quot;: {&quot;Predis&quot;: &quot;lib/&quot;}
+    }
+}
+            </pre>
+            <p>Note: Package Definition === Application/Root Definition</p>
+        </div>
+
+        <div class="slide">
+            <h1><em>Avoiding</em> version <em>chaos</em><br />in your team</h1>
+            <div class="incremental">
+                <h2>composer.lock</h2>
+                <ul>
+                    <li>Lists packages &amp; versions</li>
+                    <li>Replaces composer.json</li>
+                    <li>Created by <code>composer install</code> (installs your dependencies)</li>
+                    <li>Updated by <code>composer update</code> (updates your dependencies)</li>
+                    <li>Must be committed in your VCS and shipped with your releases</li>
+                </ul>
+            </div>
+            <div class="incremental">
+                <br />
+                <h2>Benefits</h2>
+                <ul>
+                    <li>Everyone on a team works with <strong>exactly</strong> the same dependency versions</li>
+                    <li>When deploying, all machines run <strong>exactly</strong> the same dependency versions</li>
+                    <li>Users will never get dependency versions that you did not test with</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>Autoloading</h1>
+            <p>Libraries/projects define their namespaces:</p>
+            <pre class="brush: js">
+&quot;autoload&quot;: {
+    &quot;psr-0&quot;: {
+        &quot;Vendor\\Namespace&quot;: &quot;lib/&quot;
+    },
+    &quot;classmap&quot;: [&quot;src/&quot;, &quot;VeryOld.php&quot;]
+},
+&quot;include-path&quot;: [&quot;src/&quot;, &quot;&quot;]
+            </pre>
+
+            <div class="incremental">
+                <p>Composer builds an autoloader for you:</p>
+                <pre class="brush: js">
+vendor/autoload.php
+                </pre>
+            </div>
+
+            <div class="incremental">
+                <p>Use the generated autoloader:</p>
+                <pre class="brush: php">
+require __DIR__.'/../vendor/autoload.php';
+
+use Silex\Application;
+use Silex\Extension\TwigExtension;
+
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\Response;
+
+$app = new Application();
+// ...
+                </pre>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>Autoloading Tests</h1>
+            <p>Add your own namespaces for testing purposes in PHPUnit's bootstrap:</p>
+            <pre class="brush: php">
+# tests/bootstrap.php
+
+$loader = require __DIR__.'/../vendor/autoload.php';
+
+$loader-&gt;add('My\Test', __DIR__);
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>Alternative Repositories</h1>
+            <pre class="brush: js">
+&quot;repositories&quot;: [
+    {
+        &quot;type&quot;: &quot;composer&quot;,
+        &quot;url&quot;: &quot;http://private.satis.example.org&quot;
+    },
+    {
+        &quot;type&quot;: &quot;vcs&quot;,
+        &quot;url&quot;: &quot;git://example.org/MyRepo.git&quot;
+    },
+    {
+        &quot;packagist&quot;: false
+    }
+]
+            </pre>
+
+            <p>See <a href="http://getcomposer.org/doc/05-repositories.md">docs</a> for more</p>
+        </div>
+
+        <div class="slide">
+            <h1>Depending on packages without composer.json</h1>
+            <pre class="brush: js">
+&quot;repositories&quot;: [
+    {
+        &quot;type&quot;: &quot;package&quot;,
+        &quot;package&quot;: {
+            &quot;name&quot;: &quot;vendor/package&quot;,
+            &quot;version&quot;: &quot;1.0.0&quot;,
+            &quot;dist&quot;: {
+                &quot;url&quot;: &quot;http://example.org/package.zip&quot;,
+                &quot;type&quot;: &quot;zip&quot;
+            },
+            &quot;source&quot;: {
+                &quot;url&quot;: &quot;git://example.org/package.git&quot;,
+                &quot;type&quot;: &quot;git&quot;,
+                &quot;reference&quot;: &quot;tag name, branch name or commit hash&quot;
+            }
+        }
+    }
+],
+&quot;require&quot;: {
+    &quot;vendor/package&quot;: &quot;1.0.0&quot;
+}
+            </pre>
+            <p>Note: repositories are only available to the root package</p>
+        </div>
+
+        <!-- =============== STATE =================  -->
+        <div class="slide big">
+            <div class="vcenter">
+                <h1><em>State</em> of the Project</h1>
+            </div>
+        </div>
+
+        <div class="slide big" data-background="/slides/2012-01-31%20Composer/contributors2.png">
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1><em>Adoption</em></h1>
+                <ul>
+                    <li>&gt;1500 packages on Packagist (+450 in May.)</li>
+                    <li>350'000 package installs from Packagist last month</li>
+                    <li>Alpha4 soon to be released</li>
+                    <li>Many early adopters</li>
+                    <li>Supported by frameworks/libs</li>
+                    <li>(Integration by PaaS providers)</li>
+                    <li>(Integration in apps for plugins)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1><em>Roadmap</em></h1>
+                <ul>
+                    <li>Support for web assets</li>
+                    <li>Cleanups and small missing features</li>
+                    <li>Bugfixes</li>
+                    <li>Optimizations</li>
+                    <li>Beta in June, first stable end of summer</li>
+                    <li>Want to help? <br /><a href="http://github.com/composer/composer/issues">github.com/composer/composer/issues</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- =============== CONCLUSION =================  -->
+        <div class="slide big" data-background="/slides/2012-01-31%20Composer/wheel.jpg">
+            <div class="">
+                <h1 style="text-align: right" class="outline">Wishful Thinking</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Look around.</h1>
+                <h1>Write small libs.</h1>
+                <h1>Share code.</h1>
+                <h1>Reuse things.</h1>
+                <h1><em>Reinvigorate PHP</em></h1>
+            </div>
+        </div>
+
+        <!-- End -->
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Find Out More</h1>
+                <ul>
+                    <li><a href="http://getcomposer.org">getcomposer.org</a></li>
+                    <li><a href="http://packagist.org">packagist.org</a></li>
+                    <li><a href="https://github.com/composer">github.com/composer</a></li>
+                    <li><a href="https://groups.google.com/forum/#!forum/composer-dev">composer-dev google group</a></li>
+                    <li><a href="irc://irc.freenode.org/composer">#composer</a> &amp; <a href="irc://irc.freenode.org/composer-dev">#composer-dev</a></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="layout" data-name="default">
+            <content></content>
+        </div>
+    </body>
+</html>
