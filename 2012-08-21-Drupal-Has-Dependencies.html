@@ -131,22 +131,9 @@
         </div>
 
         <div class="slide big">
-            <div class="vcenter">
-                <h1>Managing <br /><em>Packages</em> vs <em>Dependencies</em></h1>
-            </div>
-        </div>
-
-        <div class="slide big">
             <div class="vcenter" style="text-align: center">
                 <h1>Package Management in PHP</h1>
                 <a href="http://example.preinheimer.com/phpunit.html"><img class="noscale round" src="/slippy/slides/2012-06-07-Composer/pear.png" alt="" /></a>
-            </div>
-        </div>
-
-        <div class="slide big">
-            <div style="text-align: center;">
-                <h1>The Composer <em>Ecosystem</em></h1>
-                <a href="https://github.com/composer">github.com/composer</a>
             </div>
         </div>
 
@@ -192,15 +179,32 @@
         <div class="slide big">
             <div>
                 <h1>The Composer Ecosystem</h1>
-                <h2><em>composer/installers</em> - Custom Installers</h2>
-                <ul>
-                    <li>Multi-Framework Package Installer</li>
-                    <li>Supports CakePHP, CodeIgniter, FuelPHP, Joomla!, Kohana, Laravel, Lithium, Magento, phpBB, PPI, SilverStripe, Symfony1, Wordpress, Zend Framework 1 and <em>Drupal</em></li>
-                </ul>
+                <h2><em>composer/installers</em></h2>
+                <h3>Custom Package Installers for</h3>
+                <div style="float:right;">
+                    <ul style="font-size:75%;">
+                        <li>Magento</li>
+                        <li>phpBB</li>
+                        <li>PPI</li>
+                        <li>SilverStripe</li>
+                        <li>Symfony1</li>
+                        <li>Wordpress</li>
+                        <li>Zend Framework 1</li>
+                    </ul>
+                </div>
+                <div style="">
+                    <ul style="font-size:75%;">
+                        <li>CakePHP</li>
+                        <li>CodeIgniter</li>
+                        <li>FuelPHP</li>
+                        <li>Joomla!</li>
+                        <li>Kohana</li>
+                        <li>Laravel</li>
+                        <li>Lithium</li>
+                    </ul>
+                </div>
+                <h3 style="text-align:center; padding-top:20px; clear:both;">and <em>Drupal</em></h3>
             </div>
-        </div>
-
-        <div class="slide" data-background="/slippy/slides/2012-06-07-Composer/tweets.png">
         </div>
 
         <!-- =============== USAGE =================  -->
@@ -393,18 +397,6 @@ $app = new Application();
         </div>
 
         <div class="slide">
-            <h1>Autoloading Tests</h1>
-            <p>Add your own namespaces for testing purposes in PHPUnit's bootstrap:</p>
-            <pre class="brush: php">
-# tests/bootstrap.php
-
-$loader = require __DIR__.'/../vendor/autoload.php';
-
-$loader->add('My\Test', __DIR__);
-            </pre>
-        </div>
-
-        <div class="slide">
             <h1>Alternative Repositories</h1>
             <pre class="brush: js">
 "repositories": [
@@ -582,17 +574,9 @@ Generating autoload files
 
         <div class="slide big">
             <div class="vcenter">
-                <h1>Thank you.</h1>
-            </div>
-        </div>
-
-        <div class="slide big">
-            <div class="vcenter">
-                <h1>Questions?</h1>
-                <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
+                <h1>Conversation!</h1>
                 <br/>
-                <h1>Feedback:</h1>
-                <h1><a href="http://joind.in/6604">http://joind.in/6260</a></h1>
+                <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
             </div>
         </div>
 
@@ -619,6 +603,12 @@ Generating autoload files
     "monolog/monolog": "dev-my-feature-branch as 1.1.0"
 }
             </pre>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Thank you.</h1>
+            </div>
         </div>
 
         <div class="layout" data-name="default">
