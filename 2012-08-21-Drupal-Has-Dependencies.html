@@ -459,10 +459,9 @@ $app = new Application();
             <div>
                 <h1><em>Adoption</em></h1>
                 <ul>
-                    <li>&gt;1500 packages on Packagist (+450 in May.)</li>
-                    <li>350'000 package installs from Packagist last month</li>
-                    <li>Alpha4 soon to be released</li>
-                    <li>Many early adopters</li>
+                    <li>&gt;2700 packages on Packagist</li>
+                    <li>2'600'000 package installs from Packagist since April</li>
+                    <li>Alpha5 released</li>
                     <li>Supported by frameworks/libs</li>
                     <li>(Integration by PaaS providers)</li>
                     <li>(Integration in apps for plugins)</li>
@@ -478,7 +477,7 @@ $app = new Application();
                     <li>Cleanups and small missing features</li>
                     <li>Bugfixes</li>
                     <li>Optimizations</li>
-                    <li>Beta in June, first stable end of summer</li>
+                    <li>Beta in September</li>
                     <li>Want to help? <br /><a href="http://github.com/composer/composer/issues">github.com/composer/composer/issues</a></li>
                 </ul>
             </div>
@@ -493,9 +492,9 @@ $app = new Application();
 
         <div class="slide big">
             <div>
-                <h2><em>Drupal 8</em></h2>
+                <h1><em>Drupal 8</em></h1>
                 <ul>
-                    <li>Uses Composer to handle...
+                    <li>Uses Composer to handle
                         <ul>
                             <li>Symfony</li>
                             <li>Doctrine Common</li>
@@ -508,16 +507,18 @@ $app = new Application();
             </div>
         </div>
 
-        <div class="slide">
-            <h2><em>Drush</em> Composer</h2>
-            <p>Drush wrapper to run Composer commands <a href="http://drupal.org/project/composer">http://dgo.to/composer</a></p>
-            <pre class="brush: bash">
-$ drush dl composer
-$ drush composer install
-            </pre>
+        <div class="slide big">
+            <div>
+                <h2><em>Drush</em> Composer</h2>
+                <p>Drush wrapper to run Composer commands <a href="http://drupal.org/project/composer">http://dgo.to/composer</a></p>
+                <pre class="brush: bash">
+    $ drush dl composer
+    $ drush composer install
+                </pre>
+            </div>
         </div>
 
-        <div class="slide">
+        <div class="slide big">
             <h2><em>Drush</em> Composer Hooks</h2>
             <p>Drush Composer processes <em>composer.json</em> when modules are installed</p>
             <pre class="brush: bash">
@@ -532,13 +533,15 @@ Generating autoload files
             </pre>
         </div>
 
-        <div class="slide">
-            <h2><em>Drupal</em> Composer Autoload</h2>
-            <p>Module to integrate your module with Composer <a href="http://drupal.org/project/composer_autoload">http://dgo.to/composer_autoload</a></p>
-            <ul>
-                <li>Automatically includes any <em>autoload.php</em> files</li>
-                <li>Caches the list of files</li>
-            </ul>
+        <div class="slide big">
+            <div>
+                <h2><em>Drupal</em> Composer Autoload</h2>
+                <p>Module to integrate your module with Composer <a href="http://drupal.org/project/composer_autoload">http://dgo.to/composer_autoload</a></p>
+                <ul>
+                    <li>Automatically includes module <em>autoload.php</em> files</li>
+                    <li>Caches the list of files</li>
+                </ul>
+            </div>
         </div>
 
         <!-- =============== CONCLUSION =================  -->
@@ -575,9 +578,58 @@ Generating autoload files
         <div class="slide big">
             <div class="vcenter">
                 <h1>Conversation!</h1>
+                <ul>
+                    <li>composer.json in project root?</li>
+                    <li>Using Composer to install modules?</li>
+                    <li>composer.json vs. module.info?</li>
+                    <li>Drupal Core as a dependency?</li>
+                </ul>
                 <br/>
                 <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
+                <p>Pull Request for Package Cache: <a href="https://github.com/composer/composer/pull/915">github.com/composer/composer/pull/915</a></p>
             </div>
+        </div>
+
+        <div class="slide">
+            <h1>Root composer.json proposal</h1>
+            <pre class="brush: js">
+"require": {
+    "drupal/core": "8.0.0",
+    "my/module1": "1.0.0",
+    "my/module2": "2.1.3",
+}
+            </pre>
+            <h1>Drupal Update Process</h1>
+            <pre class="brush: js">
+"require": {
+    "drupal/core": "8.0.1",
+    "my/module1": "1.0.0",
+    "my/module2": "2.1.3",
+}
+            </pre>
+            <pre class="brush: bash; gutter: false">
+php composer.phar update
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>Install Drupal with Composer</h1>
+            <pre class="brush: bash; gutter: false">
+php composer.phar create-project drupal/project
+            </pre>
+            <h1>Result</h1>
+            <ul>
+                <li>Standard directory structure</li>
+                <li>default config</li>
+                <li>...</li>
+            </ul>
+            <p>composer.json</p>
+            <pre class="brush: js">
+"require": {
+    "drupal/core": "8.0.0",
+}
+            </pre>
+            <p>Drupal Core and dependencies in <code>vendor/</code>
         </div>
 
         <div class="slide">
