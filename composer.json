@@ -1,0 +1,30 @@
+{
+    "name": "naderman/slides",
+    "authors": [
+        {
+            "name": "Nils Adermann",
+            "email": "naderman@naderman.de"
+        }
+    ],
+    "require": {
+        "seldaek/slippy": "1.0.0"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "seldaek/slippy",
+                "version": "1.0.0",
+                "dist": {
+                    "url": "https://github.com/Seldaek/slippy/zipball/master",
+                    "type": "zip"
+                },
+                "source": {
+                    "url": "git://github.com/Seldaek/slippy.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ]
+}

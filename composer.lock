@@ -1,0 +1,17 @@
+{
+    "hash": "d1f421aab4a263af27c9046f9f2ce9e9",
+    "packages": [
+        {
+            "package": "seldaek/slippy",
+            "version": "1.0.0"
+        }
+    ],
+    "packages-dev": null,
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": [
+
+    ]
+}
