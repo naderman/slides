@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PHP Reinvented - How Composer helped shape the new way of writing PHP</title>
+        <meta name="author" content="Nils Adermann" />
+        <meta name="email" content="naderman@naderman.de" />
+        <meta name="date" content="2014-04-13" />
+        <meta name="venue" content="DrupalCamp Frankfurt" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- Slippy core file and dependencies -->
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="jquery.history.js"></script>
+        <script type="text/javascript" src="slippy.js"></script>
+        <!-- Slippy structural styles -->
+        <link type="text/css" rel="stylesheet" href="slippy.css"/>
+        <!-- Slippy theme -->
+        <link type="text/css" rel="stylesheet" href="slippy-pure.css"/>
+        <!-- Syntax highlighting core file  -->
+        <script type="text/javascript" src="highlighter/shCore.js"></script>
+        <!-- Syntax highlighting brushes, remove those you don't need -->
+        <script type="text/javascript" src="highlighter/shBrushJScript.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPhp.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushXml.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPlain.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushBash.js"></script>
+        <!-- Syntax highlighting styles-->
+        <link type="text/css" rel="stylesheet" href="highlighter/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="highlighter/shThemeEclipse.css"/>
+        <!-- Slippy init code -->
+        <script type="text/javascript">
+            $(function() {
+                SyntaxHighlighter.all();
+                $(".slide").slippy({
+                    animLen: 0
+                });
+            });
+        </script>
+        <link href="http://fonts.googleapis.com/css?family=Lato:700,700italic" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            body {
+                color: #fff;
+                text-shadow: 1px 1px #333;
+                font-family: 'Lato', 'Tahoma', sans-serif;
+                background: #00f;
+                background-color:#0000ff;
+                background-image: url('/slippy/slides/2014-04-13-Composer/blueprint.jpg');
+                background-position: 50% 50%;
+/*                background-image: -webkit-radial-gradient(50% 50%, ellipse closest-side, #88f, #f 100%);
+                background-image: -moz-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: -o-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: -ms-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);*/
+            }
+            div.syntaxhighlighter {
+                background: #aaa !important;
+            }
+            .alertWrapper {
+                top: 5%;
+                bottom: auto;
+            }
+            .footer {
+                margin-bottom: 0px;
+            }
+            body.slide-1 .slideDisplay, body.slide-background .slideDisplay {
+                display: none;
+            }
+            body.slide-1 .footer {
+                display: none;
+            }
+            .slideDisplay {
+                color: #eee;
+            }
+            a, a:link, a:visited, a:hover {
+                text-decoration: none;
+                color: #ddd;
+            }
+            .slide.left h1 {
+                text-align: left;
+            }
+            h1 {
+                line-height: 130%;
+                text-shadow: 1px 1px #333;
+                font-size: 1.4em;
+            }
+            h2 {
+                line-height:120%;
+                text-shadow: 1px 1px #333;
+                font-size: 1.3em;
+            }
+            ul li {
+                line-height: 130%;
+            }
+            p {
+                margin-bottom: .7em;
+            }
+            img.round {
+                border-radius: 10px;
+            }
+            .outline {
+                color: #000;
+                text-shadow: 0 0 3px #fff;
+            }
+            .reverse {
+                color: #fff;
+                text-shadow: 0 0 3px #000;
+            }
+            .output {
+                display: block;
+                background: #ffd;
+                padding: .5em;
+                white-space: pre;
+            }
+            .slide em {
+                font-style: italic;
+                font-size:1.4em;
+                color: #fff;
+            }
+            .syntaxhighlighter, code, pre, pre span {
+                text-shadow:none;
+                color:#000;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="slide big">
+            <div class="vcenter">
+                <h1><em>PHP Reinvented</em><br/>How Composer helped shape the new way of writing PHP</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h2>About Me</h2>
+            <p>Free Software Developer<br /> &nbsp; <a href="https://github.com/naderman">https://github.com/naderman</a></p>
+            <p>phpBB Development Lead<br /> &nbsp; <a href="https://www.phpbb.com">https://www.phpbb.com</a></p>
+            <p>Composer Co-Author<br /> &nbsp; <a href="https://www.getcomposer.com">https://getcomposer.org</a></p>
+            <p>Professional Managed phpBB Hosting &amp; Consulting around PHP &amp; Composer<br /> &nbsp; <a href="https://www.forumatic.com">https://www.forumatic.com</a></p>
+        </div>
+
+        <div class="slide big" data-background="/slippy/slides/2014-04-13-Composer/socrates.jpg">
+            <div>
+                <h1 style="text-align: right;margin-right:-40px;" class="outline">Why should you care?</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <blockquote><p>“When people are incompetent in the strategies they adopt to achieve success and satisfaction, they suffer a dual burden: Not only do they reach erroneous conclusions and make unfortunate choices, but their incompetence robs them of the ability to realize it.  Instead, like Mr. Wheeler, they are left with the erroneous impression they are doing just fine.”
+            </p>
+            </blockquote>
+            <p style="text-align:right;">Dunning Kruger Effect</p>
+            <p><a href="http://opinionator.blogs.nytimes.com/2010/06/20/the-anosognosics-dilemma-1/">http://opinionator.blogs.nytimes.com/2010/06/20/the-anosognosics-dilemma-1</a></p>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1><em>Congratulations, you are here to learn about what you have yet to learn.</em></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1><em>Buzzwords</em></h1>
+                <h1>Empty shells or indicative of important changes?</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h1><em>Ephemeralization</em></h1>
+            <blockquote><p>
+“the ability of technological advancement to do ‘more and more with less and less until eventually you can do everything with nothing’.”
+            </p></blockquote>
+            <p style="text-align:right;">Wikipedia</p>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1><em>Automation isn't just for factories</em></h1>
+                <ul>
+                    <li>Puppet</li>
+                    <li>Chef</li>
+                    <li>Salt</li>
+                    <li>Ansible</li>
+                </ul>
+                <p>... and it's not just for big clusters either</p>
+                <ul>
+                    <li>Vagrant</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- =============== INTRO =================  -->
+        <div class="slide big">
+            <div>
+                <h1>Package and Dependency Management elsewhere</h1>
+                <ul>
+                    <li>Linux distros: RPM, APT, Portage, yum, Zypper</li>
+                    <li>Java/JVM: Maven, Leiningen, sbt</li>
+                    <li>Ruby: RubyGems, Bundler</li>
+                    <li>Python: EasyInstall, PyPi</li>
+                    <li>Javascript: npm, bower, component</li>
+                    <li>PHP: copy 'n' paste, svn:externals, PEAR</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h4>Early 2011</h4>
+                <h1>phpBB Plugins</h1>
+                <h1>Symfony Bundles</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <img src="/slippy/slides/2012-06-07-Composer/logo-composer-transparent.png" alt="Composer" />
+            </div>
+        </div>
+
+
+        <div class="slide big">
+            <div style="text-align: center;">
+                <h1>The Composer <em>Ecosystem</em></h1>
+                <a href="https://github.com/composer">github.com/composer</a>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>The Composer Ecosystem</h1>
+                <h2><em>Composer</em> - CLI Tool</h2>
+                <ul>
+                    <li>Easy to use</li>
+                    <li>Installs deps per-project</li>
+                    <li>Flexible and embeddable</li>
+                    <li>Encourages best practices (PSRs, SPDX, semver)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>The Composer Ecosystem</h1>
+                <h2><em>Packagist</em> - Package Repository</h2>
+                <ul>
+                    <li>Aggregates PHP libraries</li>
+                    <li>Open to all OSS projects</li>
+                    <li>Feeds on VCS (git, hg, svn) repositories</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>The Composer Ecosystem</h1>
+                <h2><em>Satis</em> - Micro Repository</h2>
+                <ul>
+                    <li>Minimalistic (Pirum-like)</li>
+                    <li>Useful for closed source code</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>The Composer Ecosystem</h1>
+                <h2><em>composer/installers</em></h2>
+                <h3>Custom Package Installers for</h3>
+                <div style="float:right;">
+                    <ul style="font-size:75%;">
+                        <li>MediaWiki</li>
+                        <li>OXID</li>
+                        <li>phpBB</li>
+                        <li>PPI</lI>
+                        <li>SilverStripe</li>
+                        <li>Symfony1</li>
+                        <li>TYPO3 Flow</li>
+                        <li>Wordpress</li>
+                        <li>Zend Framework</li>
+                    </ul>
+                </div>
+                <div style="">
+                    <ul style="font-size:75%;">
+                        <li>CakePHP</li>
+                        <li>CodeIgniter</li>
+                        <li>Drupal</li>
+                        <li>FuelPHP</li>
+                        <li>Joomla!</li>
+                        <li>Kohana</li>
+                        <li>Laravel</li>
+                        <li>Lithium</li>
+                        <li>Magento</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============== USAGE =================  -->
+        <div class="slide big" data-background="/slippy/slides/2012-06-07-Composer/usage.jpg">
+            <div>
+                <h1 style="text-align: right" class="outline">Usage Instructions</h1>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1><em>Using</em> a project</h1>
+            <pre class="brush: bash; gutter: false">
+git clone https://github.com/symfony/standard-edition myproject
+            </pre>
+            <code class="output">Cloning into myproject...</code>
+            <pre class="brush: bash; gutter: false">
+cd myproject/
+            </pre>
+            <pre class="brush: bash; gutter: false">
+curl -s http://getcomposer.org/installer | php
+            </pre>
+            <code class="output"><span style="color:green;">All settings correct for using Composer
+Composer successfully installed to: /home/bob/myproject/composer.phar</span>
+
+<span style="color:orange;">Use it: php composer.phar</span></code>
+        </div>
+
+        <div class="slide">
+            <h1><em>Using</em> a project</h1>
+            <pre class="brush: bash; gutter: false">
+php composer.phar install
+            </pre>
+            <code class="output"><span style="color:green;">Installing from lock file</span>
+  - Package <span style="color:green;">twig/extensions</span> (<span style="color:orange;">dev-master</span>)
+    Downloading
+    Unpacking archive
+    Cleaning up
+
+[...]
+
+  - Package <span style="color:green;">twig/twig</span> (<span style="color:orange;">1.8.0</span>)
+    Downloading
+    Unpacking archive
+    Cleaning up
+
+  - Package <span style="color:green;">symfony/symfony</span> (<span style="color:orange;">dev-master</span>)
+    Downloading
+    Unpacking archive
+    Cleaning up
+
+<span style="color:green;">Generating autoload files</span></code>
+        </div>
+
+        <div class="slide">
+            <h1><em>Using</em> a project</h1>
+            <pre class="brush: plain">
+vendor/
+    autoload.php
+    composer/
+    monolog/
+        monolog/
+    symfony/
+        symfony/
+        monolog-bundle/
+    twig/
+        twig/
+        extensions/
+    [...]
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1><em>Downloading</em> Project Dependencies</h1>
+            <h2>composer.json</h2>
+            <ul>
+                <li>Located in project root directory</li>
+                <li>Defines dependencies</li>
+            </ul>
+            <pre class="brush: js">
+{
+    "require": {
+        "silex/silex": ">=1.0.0-dev",
+        "symfony/finder": "2.1-dev",
+        "twig/twig": "1.*",
+        "predis/service-provider": "dev-master"
+        "symfony/console": "~2.1"
+    },
+    "require-dev": {
+        "mikey179/vfsStream": "*"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1><em>Avoiding</em> version <em>chaos</em><br />in your team</h1>
+            <div class="incremental">
+                <h2>composer.lock</h2>
+                <ul>
+                    <li>Lists packages &amp; versions</li>
+                    <li>Replaces composer.json</li>
+                    <li>Created by <code>composer install</code> (installs your dependencies)</li>
+                    <li>Updated by <code>composer update</code> (updates your dependencies)</li>
+                    <li>Must be committed in your VCS and shipped with your releases</li>
+                </ul>
+            </div>
+            <div class="incremental">
+                <br />
+                <h2>Benefits</h2>
+                <ul>
+                    <li>Everyone on a team works with <strong>exactly</strong> the same dependency versions</li>
+                    <li>When deploying, all machines run <strong>exactly</strong> the same dependency versions</li>
+                    <li>Users will never get dependency versions that you did not test with</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>Autoloading</h1>
+            <p>Libraries/projects define their namespaces:</p>
+            <pre class="brush: js">
+"autoload": {
+    "psr-0": {
+        "Vendor\\Namespace": "lib/"
+    },
+    "classmap": ["src/", "VeryOld.php"]
+},
+"include-path": ["src/", ""]
+            </pre>
+
+            <div class="incremental">
+                <p>Composer builds an autoloader for you:</p>
+                <pre class="brush: js">
+vendor/autoload.php
+                </pre>
+            </div>
+
+            <div class="incremental">
+                <p>Use the generated autoloader:</p>
+                <pre class="brush: php">
+require __DIR__.'/../vendor/autoload.php';
+
+use Silex\Application;
+use Silex\Extension\TwigExtension;
+
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\Response;
+
+$app = new Application();
+// ...
+                </pre>
+            </div>
+        </div>
+
+        <!-- =============== CONCLUSION =================  -->
+        <div class="slide big" data-background="/slippy/slides/2012-06-07-Composer/wheel.jpg">
+            <div class="">
+                <h1 style="text-align: right" class="outline">Evolution of PHP</h1>
+            </div>
+        </div>
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Goals</h1>
+                <ul>
+                    <li>Simple APIs</li>
+                    <li>High code quality</li>
+                    <li>Modularity / Reusability</li>
+                </ul>
+                <h1>Methods</h1>
+                <ul>
+                    <li>Separation of Concerns</li>
+                    <li>Dependency Injection</li>
+                    <li>Events</li>
+                    <li>Test-driven or Testability in mind</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>New frameworks</h1>
+                <p style="text-align:center;">Symfony2, Laravel, Silex, Lithium ...</p>
+                <h1>Single purpose libraries</h1>
+                <p style="text-align:center;">Assetic, Guzzle, Monolog, Twig, Imagine, ...</p>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1><em>Faster innovation cycle</em></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h2><em>Packagist Growth</em></h2>
+            <ul>
+                <li>Over 25,000 packages</li>
+                <li>Over 100,000 versions</li>
+                <li>Over 20,000,000 package installs per month</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <h2><em>PHP Language Evolution</em></h2>
+            <ul>
+                <li>Release Cycle</li>
+                <li>RFC process</li>
+            </ul>
+            <h2>Closures (PHP 5.3)</h2>
+                <pre class="brush: php">
+$x = $request->query->get('x', 0);
+$addX = function($a) use ($x) { return $a+$b; }
+$newNumbers = array_map($addX, $numbers);
+                </pre>
+            <h2>Short array syntax (PHP 5.4)</h2>
+                <pre class="brush: php">
+$a = [1, 3, 5, 9];
+                </pre>
+        </div>
+
+        <div class="slide big">
+            <h1><em>PHP Language Evolution</em></h1>
+            <h2>Generators (PHP 5.5)</h2>
+                <pre class="brush: php">
+function xrange($start, $limit, $step = 1) {
+    for ($i = $start; $i <= $limit; $i += $step) {
+        yield $i;
+    }
+}
+foreach (xrange(1, 9, 2) as $number) {
+    echo "$number ";
+}
+                </pre>
+            <h2>Many more smaller changes &amp; more to come</h2>
+            <h2 style="margin-top:50px;">HHVM &amp; Hack (?)</h2>
+        </div>
+
+        <div class="slide big" data-background="/slippy/slides/2014-04-13-Composer/drupal.jpg">
+            <div class="">
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1><em>Drupal8 composer.json Pt 1</em></h1>
+            <pre class="brush: js">
+  "name": "drupal/drupal",
+  "description": "Drupal is an open source content management platform powering millions of websites and applications.",
+  "type": "drupal-core",
+  "license": "GPL-2.0+",
+  "autoload": {
+    "psr-0": {
+      "Drupal\\Core": "core/lib/",
+      "Drupal\\Component": "core/lib/",
+      "Drupal\\Driver": "drivers/lib/"
+    },
+    "files": [
+      "core/lib/Drupal.php"
+    ]
+  },
+  "config": {
+    "vendor-dir": "core/vendor",
+    "preferred-install": "dist",
+    "autoloader-suffix": "Drupal8"
+  }
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1><em>Drupal8 composer.json Pt 2</em></h1>
+            <pre class="brush: js">
+  "require": {
+    "php": ">=5.4.2",
+    "sdboyer/gliph": "0.1.*",
+    "symfony/class-loader": "2.4.*",
+    "symfony/dependency-injection": "2.4.*",
+    "symfony/event-dispatcher": "2.4.*",
+    "symfony/http-foundation": "2.4.*",
+    "symfony/http-kernel": "2.4.*",
+    "symfony/routing": "2.4.*",
+    "symfony/serializer": "2.4.*",
+    "symfony/validator": "2.4.*",
+    "symfony/yaml": "dev-master#e49a47d60348665261f6e279ba383241deb73cab",
+    "twig/twig": "1.15.*",
+    "doctrine/common": "dev-master#a45d110f71c323e29f41eb0696fa230e3fa1b1b5",
+    "doctrine/annotations": "dev-master#463d926a8dcc49271cb7db5a08364a70ed6e3cd3",
+    "guzzlehttp/guzzle": "4.0.*",
+    "kriswallsmith/assetic": "1.1.*@alpha",
+    "symfony-cmf/routing": "1.1.*@alpha",
+    "easyrdf/easyrdf": "0.8.*",
+    "phpunit/phpunit": "3.7.*",
+    "zendframework/zend-feed": "2.2.*"
+  },
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Look around.</h1>
+                <h1>Write small libs.</h1>
+                <h1>Share code.</h1>
+                <h1>Reuse things.</h1>
+                <h1><em>Reinvigorate PHP</em></h1>
+            </div>
+        </div>
+
+        <!-- End -->
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Find Out More</h1>
+                <ul>
+                    <li><a href="http://getcomposer.org">getcomposer.org</a></li>
+                    <li><a href="http://packagist.org">packagist.org</a></li>
+                    <li><a href="https://github.com/composer">github.com/composer</a></li>
+                    <li><a href="https://groups.google.com/forum/#!forum/composer-users">composer-users google group</a></li>
+                    <li><a href="https://groups.google.com/forum/#!forum/composer-dev">composer-dev google group</a></li>
+                    <li><a href="irc://irc.freenode.org/composer">#composer</a> &amp; <a href="irc://irc.freenode.org/composer-dev">#composer-dev</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Thank you.</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Questions?</h1>
+                <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
+            </div>
+        </div>
+
+        <div class="layout" data-name="default">
+            <content></content>
+        </div>
+
+        <div class="footer">
+            <span class="left">Nils Adermann</span>
+            <span class="right"></span>
+            <span class="left">Twitter <a href="http://twitter.com/seldaek">@naderman</a></span>
+            <span class="right"><a href="https://www.forumatic.com/">Forumatic</a></span>
+            <hr class="defloat" />
+        </div>
+    </body>
+</html>
