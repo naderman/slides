@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>You thought Composer couldn't do that?</title>
+        <meta name="author" content="Nils Adermann" />
+        <meta name="email" content="naderman@naderman.de" />
+        <meta name="date" content="2013-01-26" />
+        <meta name="venue" content="PHP Benelux 2013" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- Slippy core file and dependencies -->
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="jquery.history.js"></script>
+        <script type="text/javascript" src="slippy.js"></script>
+        <!-- Slippy structural styles -->
+        <link type="text/css" rel="stylesheet" href="slippy.css"/>
+        <!-- Slippy theme -->
+        <link type="text/css" rel="stylesheet" href="slippy-pure.css"/>
+        <!-- Syntax highlighting core file  -->
+        <script type="text/javascript" src="highlighter/shCore.js"></script>
+        <!-- Syntax highlighting brushes, remove those you don't need -->
+        <script type="text/javascript" src="highlighter/shBrushJScript.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPhp.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushXml.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushJScript.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPlain.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushBash.js"></script>
+        <!-- Syntax highlighting styles-->
+        <link type="text/css" rel="stylesheet" href="highlighter/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="highlighter/shThemeEclipse.css"/>
+        <!-- Slippy init code -->
+        <script type="text/javascript">
+            $(function() {
+                SyntaxHighlighter.all();
+                $(".slide").slippy({
+                    animLen: 0
+                });
+            });
+        </script>
+        <link href="http://fonts.googleapis.com/css?family=Cabin:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            body {
+                font-family: 'Cabin', 'Tahoma', sans-serif;
+                background: #fff;
+                background-color:#ffffff;
+                background-image: -webkit-radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+                background-image: -moz-radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+                background-image: -o-radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+                background-image: -ms-radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+                background-image: radial-gradient(50% 50%, ellipse closest-side, #ffffff, #ccc 100%);
+            }
+            div.syntaxhighlighter {
+                background: #aaa !important;
+            }
+            .alertWrapper {
+                top: 5%;
+                bottom: auto;
+            }
+            .footer {
+                margin-bottom: 0px;
+            }
+            body.slide-1 .slideDisplay, body.slide-background .slideDisplay {
+                display: none;
+            }
+            body.slide-1 .footer {
+                display: none;
+            }
+            .slideDisplay {
+                color: #eee;
+            }
+            a, a:link {
+                text-decoration: none;
+            }
+            .slide.left h1 {
+                text-align: left;
+                font-size: 1.2em;
+            }
+            h1 {
+                line-height: 130%;
+            }
+            ul li {
+                line-height: 130%;
+            }
+            p {
+                margin-bottom: .7em;
+            }
+            img.round {
+                border-radius: 10px;
+            }
+            .outline {
+                color: #000;
+                text-shadow: 0 0 3px #fff;
+            }
+            .reverse {
+                color: #fff;
+                text-shadow: 0 0 3px #000;
+            }
+            .output {
+                display: block;
+                background: #ffd;
+                padding: .5em;
+                white-space: pre;
+            }
+            .slide em {
+                color: #00b;
+            }
+            .spacey {
+                margin-top: 3em;
+            }
+            .slide.you-thought {
+                background:url('/slippy/slides/2012-11-22-Composer/you-thought.png');
+                background-color:#ff0000;
+                background-repeat:no-repeat;
+                background-position: 5% 5%;
+                border-radius:20px;
+            }
+            .slide.you-thought .slideContent {
+                padding-top:30%;
+            }
+            .slide.actually {
+                background:url('/slippy/slides/2012-11-22-Composer/actually.png');
+                background-repeat:no-repeat;
+                background-position: 5% 5%;
+            }
+            .slide.actually .slideContent {
+                padding-top:18%;
+            }
+            .slide.rock-composer {
+                background:url('/slippy/slides/2012-11-22-Composer/rock-composer-small.png');
+                background-repeat:no-repeat;
+                background-position: 100% 80%;
+            }
+            .slide.rock-composer .slideContent {
+                padding-right:23%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="slide big left">
+            <div class="vcenter">
+                <h1>Nils Adermann<br />@naderman</h1>
+                <br />
+                <h1>You thought <em>Composer</em> couldn't do that?</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h2>About Me</h2>
+            <p>Passionate Free Software Developer<br /> &nbsp; <a href="https://github.com/naderman">https://github.com/naderman</a></p>
+            <p>phpBB Development Lead<br /> &nbsp;<a href="https://www.phpbb.com">https://www.phpbb.com</a></p>
+            <p>Co-Founder of <br /> &nbsp;<a href="https://www.forumatic.com">https://www.forumatic.com</a><br /> &nbsp;Professional Managed phpBB Hosting</p>
+        </div>
+
+        <!-- =============== INTRO =================  -->
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <img src="/slippy/slides/2012-11-22-Composer/logo-composer-transparent.png" alt="Composer" />
+            </div>
+        </div>
+
+        <!-- =============== The Flow =================  -->
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>The Story of an Install/Update</h1>
+            </div>
+        </div>
+
+        <div class="slide">
+            <ol style="font-size:130%;font-weight:bold;padding-left:0px;">
+                <li>Bootstrap</li>
+                <li>Creation of the Package Pool</li>
+                <li>Dependency Resolution</li>
+                <li>Package Install / Update / Uninstall</li>
+                <li>Wrap-up (Lock, Autoload, Events)</li>
+            </ol>
+        </div>
+
+        <div class="slide">
+            <h1>1. Bootstrap</h1>
+            <h2>Loading configuration</h2>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>You have to define config options for each project</h1>
+            <ul style="font-size:100%;padding-left:10%;">
+                <li>vendor-dir</li>
+                <li>bin-dir</li>
+                <li>process-timeout</li>
+                <li>github-protocols</li>
+                <li>notify-on-install</li>
+                <li>cache-files-ttl</li>
+            </ul>
+        </div>
+
+        <div class="slide big actually">
+            <h1>$COMPOSER_HOME/config.json</h1>
+            <p>allows you to set defaults for config options in all your projects</h1>
+            <p style="font-size: 1.2em">*nix: /home/example/.composer/config.json</p>
+            <p style="font-size: 1.2em">OSX: /Users/example/.composer/config.json</p>
+            <p style="font-size: 1.2em">Windows: C:\Users\example\AppData\Roaming\Composer\config.json</p>
+        </div>
+
+        <div class="slide">
+            <h1>1. Bootstrap</h1>
+
+            <h2>pre-install-cmd / pre-update-cmd scripts fire</h2>
+        </div>
+
+        <div class="slide">
+            <h1>1. Bootstrap</h1>
+
+            <h2>Loading of the root package</h2>
+
+            <div class="incremental">
+                <h2 style="margin-top:1em">On first install or update</h2>
+                <p>Create install requests for the requirements</p>
+                <p>(on update:) Force update installed dev packages to latest</p>
+            </div>
+
+            <div class="incremental">
+                <h2 style="margin-top:1em">On install from lock file</h2>
+                <p>Load lock file as a repository</p>
+                <p>Create install requests for all its packages</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>2. Creation of the package pool</h1>
+
+            <div class="incremental">
+                <h2>Platform repository</h2>
+                <pre class="brush: text">
+$ composer show --platform
+                </pre>
+            </div>
+
+            <div class="incremental" style="margin-top:1em">
+                <h2>Local (installed) repositories</h2>
+                <pre class="brush: text">
+$ composer show --installed
+                </pre>
+            </div>
+
+            <div class="incremental" style="margin-top:1em">
+                <h2>Locked repository (install only)</h2>
+            </div>
+
+            <div class="incremental" style="margin-top:1em">
+                <h2>Custom repositories</h2>
+            </div>
+
+            <div class="incremental" style="margin-top:1em">
+                <h2>Packagist</h2>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h1>Custom Repository: VCS</h1>
+
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nelmio/NelmioSecretBundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/nelmio/lib"
+        }
+    ],
+    "require": {
+        "nelmio/secret-bundle": "1.*",
+        "nelmio/lib": "1.5.3"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>I have to list every private package's vcs repository in my project</h1>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Private packages with Satis</h1>
+
+            <p>satis.json</p>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nelmio/NelmioSecretBundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/nelmio/lib"
+        }
+    ]
+}
+            </pre>
+            <pre class="brush: text">
+composer create-project composer/satis myrepo
+cd myrepo
+bin/satis build satis.json www/
+            </pre>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Private packages with Satis</h1>
+
+            <p>composer.json</p>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://satis.example.org/"
+        }
+    ],
+    "require": {
+        "nelmio/secret-bundle": "1.*",
+        "nelmio/lib": "1.5.3"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big you-thought">
+            <h2>I still have to specify my custom satis repository in each package</h2>
+            <h1>Why aren't repositories recursive?</h1>
+        </div>
+
+        <div class="slide big">
+            <h1>Hold on!</h1>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Proxying with Satis</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h1>Proxying with Satis</h1>
+
+            <p>satis.json</p>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.org"
+        }
+    ],
+    "require": {
+        "symfony/symfony": "*"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h1>Proxying with Satis</h1>
+
+            <p>satis.json</p>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://susans-satis.example.com"
+        },
+        {
+            "type": "composer",
+            "url": "https://johns-satis.example.com"
+        }
+    ],
+    "config": {
+        "require-all": true
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>3. Dependency Resolution: Input</h1>
+
+            <h2>Pool</h2>
+            <h4>Package name &rarr; List of package versions which</h4>
+            <ul>
+                <li>match the name</li>
+                <li>replace a package by that name</li>
+                <li>provide a package by that name</li>
+            </ul>
+            </p>
+
+            <h2>Request</h2>
+            <h4>List of packages with version constraints to be installed/updated</h4>
+        </div>
+
+        <div class="slide">
+            <h1>3. Dependency Resolution: Solver</h1>
+
+            <h2>Generate boolean expression</h2>
+            <p>All involved packages and their relationships in a single expression</p>
+            <pre class="brush: text">
+            Request: Install foo/x
+            foo/x-v1 requires foo/y-v1
+            foo/x-v2 requires foo/y
+            bar/z-v1 replaces foo/y-v2
+            </pre>
+            <pre class="brush: text">
+            (foo/x-v1 | foo/x-2) &
+            (!foo/x-v1 | foo/y-v1) &
+            (!foo/x-v1 | foo/y-v1 | foo/y-v2 | bar/z-v1)
+            </pre>
+            <h2>Find TRUE/FALSE assignment for each package version</h2>
+            <p>TRUE means install if not yet installed.</p>
+            <p>FALSE means remove if currently installed.</p>
+            <h2>Generate transaction with correct installation order</h2>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>Now why aren't repositories loaded recursively?</h1>
+        </div>
+
+        <div class="slide">
+            <h2>Option 1: Load all repositories recursively on startup</h1>
+            <ul>
+                <li>Thousands of packages can all provide any number of repositories</li>
+                <li>Old versions point to repositories that no longer exist</li>
+            </ul>
+            <p><strong>Would take a very long time</strong></p>
+            <h2>Option 2: Iteratively fetch repositories</h2>
+            <ul>
+                <li>After deciding on a 1st level of dependencies a custom repository may offer a more suitable replacement for a package already picked for installation</li>
+            </ul>
+            <p><strong>Would either have to start over and potentially loop for a long time, or produce difficult to understand sub-optimal results</strong></p>
+            <p><a href="http://getcomposer.org/doc/faqs/why-can%27t-composer-load-repositories-recursively.md">http://getcomposer.org/doc/faqs/why-can't-composer-load-repositories-recursively.md</a></p>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>So I really have to list every used custom repository in every project?</h1>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Combine Satis with config.json</h1>
+
+            <p style="font-size: 1em">*nix: /home/example/.composer/config.json</p>
+            <p style="font-size: 1em">OSX: /Users/example/.composer/config.json</p>
+            <p style="font-size: 1em">Windows: C:\Users\example\AppData\Roaming\Composer\config.json</p>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://satis.example.org/"
+        }
+    ]
+}
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h1>Combine Satis with config.json</h1>
+
+            <p>satis.json</p>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nelmio/NelmioSecretBundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/nelmio/lib"
+        }
+    ]
+}
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h1>Combine Satis with config.json</h1>
+
+            <p>composer.json</p>
+            <pre class="brush: js">
+{
+    "require": {
+        "nelmio/secret-bundle": "1.*",
+        "nelmio/lib": "1.5.3"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h1>And Now For Something Completely Different</h1>
+
+            <h1>We found a bug in Symfony</h1>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>If I want to patch an existing package I can only</h1>
+            <ul>
+                <li>Wait for upstream to merge my changes</li>
+                <li>Create a fork under a different name and alter all require statements</li>
+            </ul>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Using a forked project</h1>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/naderman/symfony"
+        }
+    ],
+    "require": {
+        "symfony/symfony": "dev-master"
+    }
+}
+            </pre>
+            <p>Additional repositories take priority over the default ones</p>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Using a forked project</h1>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/naderman/symfony"
+        }
+    ],
+    "require": {
+        "symfony/symfony": "dev-my-patch"
+    }
+}
+            </pre>
+            <p>Your branches are available as well</p>
+            <p>Use <code>composer show -v symfony/symfony</code> to check</p>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>I have other dependencies that require a specific version of symfony/symfony and now I get a conflict</h1>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Aliasing</h1>
+            <pre class="brush: js">
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/naderman/symfony"
+        }
+    ],
+    "require": {
+        "symfony/symfony": "dev-my-patch as 2.1.0"
+        "symfony-cmf/symfony-cmf": "1.0.*"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>They said it's a feature not a bug</h1>
+            <h1>I cannot publish my fork permanently</h1>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Replace</h1>
+            <pre class="brush: js">
+{
+    "name": "naderman/symfony",
+    "replace": {
+        "symfony/symfony": "2.*"
+    }
+}
+            </pre>
+            <pre class="brush: js">
+{
+    "require": {
+        "naderman/symfony": "3.0.*"
+        "symfony-cmf/symfony-cmf": "1.0.*"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>When I rename a package everything depending on the old name breaks</h1>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Renaming packages safely</h1>
+
+            <pre class="brush: js">
+{
+    "name": "new/name",
+    "replace": {
+        "old/name": "*"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>I required naderman/symfony 3.0.*</h1>
+            <h1>dev-master has to be aliased to 3.0.0 in all my projects</h1>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Use <em>branch-alias</em> to make branches installable</h1>
+        </div>
+
+        <div class="slide">
+            <h1>Making Branches Installable</h1>
+
+            <p>Symfony master branch</p>
+            <pre class="brush: js">
+{
+    "name": "symfony/symfony",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.2.x-dev"
+        }
+    }
+}
+            </pre>
+
+            <p>Your project</p>
+            <pre class="brush: js">
+{
+    "require": {
+        "symfony/symfony": "2.2.*"
+    },
+    "minimum-stability": "dev"
+}
+            </pre>
+
+            <pre class="brush: js">
+{
+    "require": {
+        "symfony/symfony": "2.2.*@dev"
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>4. Install / Update / Uninstall</h1>
+
+            <h2 class="incremental">--prefer-source forces source install (git clone)</h2>
+            <h2 class="incremental" style="margin-top:1em">--prefer-dist forces dist install (zip download)</h2>
+            <h2 class="incremental" style="margin-top:1em">--dry-run if you are just curious</h2>
+            <div class="incremental">
+                <h2 style="margin-top:1em">--verbose / -v to see more details</h2>
+
+                <pre class="brush: text">
+$ composer update -v (--verbose)
+Loading composer repositories with package information
+Updating dependencies
+  - Updating symfony/symfony dev-master (487b8c => 885d47)
+    Checking out 885d4733664b040765f2faab68f3aacef58d1216
+    Pulling in changes:
+      885d473 - Fabien Potencier: merged branch Tobion/empty-requ....
+      13937de - Fabien Potencier: replaced self.version/2.1.* by ...
+      a9a0f42 - Fabien Potencier: merged 2.1
+      3c32fd9 - Fabien Potencier: replaced self.version by 2.1.*...
+      c5edce7 - Fabien Potencier: merged branch eventhor...
+      4d6dd46 - Fabien Potencier: merged branch eventhor...
+                </pre>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>5. Wrap-up</h1>
+
+            <h2>Writing lock file (update or first install only)</h2>
+            <pre class="brush: text">
+$ composer install
+Installing dependencies from lock file
+Your lock file is out of sync with your composer.json, run "composer.phar update" to update dependencies
+            </pre>
+        </div>
+
+        <div class="slide you-thought big">
+            <h3>Updating the lock file requires updating everything to the latest version</h3>
+        </div>
+
+        <div class="slide actually big">
+            <p>Update individual packages</p>
+            <pre class="brush: text">
+$ composer update package1 package2
+            </pre>
+            <p>Update only the lock file</p>
+            <pre class="brush: text">
+$ composer update nothing
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1>&gt; 6,800 packages on Packagist</h1>
+                <h3>Thank you for publishing your projects!</h3>
+                <p>Makes Composer slow with old lock file format</p>
+                <p style="margin:1em;border:1px solid #000;padding:1em;">&lt;Seldaek&gt; Update your lock files people, the end is nigh!</p>
+
+                <pre class="brush: text">
+                    $ composer update nothing
+                </pre>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>5. Wrap-up</h1>
+
+            <h2>Generating an autoloader</h2>
+        </div>
+
+        <div class="slide big you-thought">
+            <h1>Composer's autoloader is slow because it searches for files on disk</h1>
+        </div>
+
+        <div class="slide big actually">
+            <h1>Generating an optimized autoloader</h1>
+
+            <div>
+                <pre class="brush: text">
+$ composer dump-autoload --optimize
+                </pre>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>5. Wrap-up</h1>
+
+            <h2>post-install-cmd / post-update-cmd scripts fire</h2>
+
+            <p>Scripts are annoying you during deployment?</p>
+            <pre class="brush: text">
+$ composer install --no-scripts
+$ app/console assetic:dump --env=prod --no-debug web/
+$ [...]
+            </pre>
+        </div>
+
+        <!-- =============== Troubleshooting =================  -->
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Troubleshooting</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h1>Package not auto-updating?</h1>
+
+            <h2>Validate your config</h2>
+            <pre class="brush: text">
+$ composer validate
+./composer.json is valid
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h1>503 from GitHub when downloading zips?</h1>
+
+            <h2>Install from source instead</h2>
+            <pre class="brush: text">
+$ composer install --prefer-source
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>Experiencing a strange behavior?</h1>
+
+            <div class="incremental">
+                <h2>Update composer</h2>
+                <pre class="brush: text">
+$ composer self-update
+                </pre>
+            </div>
+
+            <div class="incremental">
+                <h2>Check your setup's settings</h2>
+                <pre class="brush: text">
+$ curl -s https://getcomposer.org/installer | php -- --check
+                </pre>
+            </div>
+
+            <div class="incremental">
+                <h2>Update your deps</h2>
+                <pre class="brush: text">
+$ composer update -v
+                </pre>
+            </div>
+
+            <div class="incremental">
+                <h2>Still not working? Reinstall the deps</h2>
+                <pre class="brush: text">
+$ rm -rf vendor/
+$ composer update -v
+                </pre>
+            </div>
+
+            <div class="incremental">
+                <h2>Still not working?</h2>
+                <h2>Report a bug with full --verbose output</h2>
+            </div>
+        </div>
+
+        <div class="slide rock-composer">
+            <ol>
+                <li>Define config and custom repositories in <code>$COMPOSER_HOME/config.json</code></li>
+                <li>Use <em>composer show</em> with options to look at available packages</li>
+                <li>Setup private repositories with <em>Satis</em></li>
+                <li>Define custom repositories in a <em>Satis proxy</em> loaded in <code>config.json</code></li>
+                <li>Packages from custom repositories have higher priority</li>
+                <li>Use <em>replace</em> when publishing a fork or renaming a package</li>
+                <li>Use <em>branch-alias</em> to make named branches available as versions</li>
+                <li>Use <code>--dry-run</code> and <code>--verbose</code> to get more info</li>
+                <li>Always commit your lock file</li>
+                <li><em>Update your lock file</em> with <code>composer update nothing</code></li>
+                <li>Generate a class map with <code>composer dump-autoload --optimize</code></li>
+            </ol>
+        </div>
+
+        <!-- End -->
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Thank you</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Find Out More</h1>
+                <ul>
+                    <li><a href="https://getcomposer.org">getcomposer.org</a></li>
+                    <li><a href="https://packagist.org">packagist.org</a></li>
+                    <li><a href="https://github.com/composer">github.com/composer</a></li>
+                    <li><a href="https://groups.google.com/forum/#!forum/composer-dev">composer-dev google group</a></li>
+                    <li><a href="irc://irc.freenode.org/composer">#composer</a> &amp; <a href="irc://irc.freenode.org/composer-dev">#composer-dev</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Questions?</h1>
+                <h1><a href="mailto:naderman@naderman.de">naderman@naderman.de</a></h1>
+                <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
+                <br/>
+                <h1>Feedback:</h1>
+                <h1><a href="https://joind.in/7807">https://joind.in/7807</a></h1>
+            </div>
+        </div>
+
+        <div class="layout" data-name="default">
+            <content></content>
+        </div>
+
+        <div class="footer">
+            <span class="left">Nils Adermann</span>
+            <span class="right"></span>
+            <span class="left">Twitter <a href="http://twitter.com/naderman">@naderman</a></span>
+            <span class="right">Company <a href="https://www.forumatic.com/">Forumatic</a></span>
+            <hr class="defloat" />
+        </div>
+    </body>
+</html>
