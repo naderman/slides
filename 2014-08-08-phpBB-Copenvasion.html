@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>phpBB</title>
+        <meta name="author" content="Nils Adermann" />
+        <meta name="email" content="naderman@naderman.de" />
+        <meta name="date" content="2014-08-08" />
+        <meta name="venue" content="FoundersHouse in Copenhagen" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- Slippy core file and dependencies -->
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="jquery.history.js"></script>
+        <script type="text/javascript" src="slippy.js"></script>
+        <!-- Slippy structural styles -->
+        <link type="text/css" rel="stylesheet" href="slippy.css"/>
+        <!-- Slippy theme -->
+        <link type="text/css" rel="stylesheet" href="slippy-pure.css"/>
+        <!-- Syntax highlighting core file  -->
+        <script type="text/javascript" src="highlighter/shCore.js"></script>
+        <!-- Syntax highlighting brushes, remove those you don't need -->
+        <script type="text/javascript" src="highlighter/shBrushJScript.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPhp.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushXml.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPlain.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushBash.js"></script>
+        <!-- Syntax highlighting styles-->
+        <link type="text/css" rel="stylesheet" href="highlighter/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="highlighter/shThemeEclipse.css"/>
+        <!-- Slippy init code -->
+        <script type="text/javascript">
+            $(function() {
+                SyntaxHighlighter.all();
+                $(".slide").slippy({
+                    animLen: 0
+                });
+            });
+        </script>
+        <link href="http://fonts.googleapis.com/css?family=Lato:700,700italic" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            body {
+                color: #fff;
+                text-shadow: 1px 1px #333;
+                font-family: 'Lato', 'Tahoma', sans-serif;
+                background: #00f;
+                background-color:#0000ff;
+                background-image: url('/slippy/slides/2014-04-13-Composer/blueprint.jpg');
+                background-position: 50% 50%;
+/*                background-image: -webkit-radial-gradient(50% 50%, ellipse closest-side, #88f, #f 100%);
+                background-image: -moz-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: -o-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: -ms-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);*/
+            }
+            div.syntaxhighlighter {
+                background: #aaa !important;
+            }
+            .alertWrapper {
+                top: 5%;
+                bottom: auto;
+            }
+            .footer {
+                margin-bottom: 0px;
+            }
+            body.slide-1 .slideDisplay, body.slide-background .slideDisplay {
+                display: none;
+            }
+            body.slide-1 .footer {
+                display: none;
+            }
+            .slideDisplay {
+                color: #eee;
+            }
+            a, a:link, a:visited, a:hover {
+                text-decoration: none;
+                color: #ddd;
+            }
+            .slide.left h1 {
+                text-align: left;
+            }
+            h1 {
+                line-height: 130%;
+                text-shadow: 1px 1px #333;
+                font-size: 1.4em;
+            }
+            h2 {
+                line-height:120%;
+                text-shadow: 1px 1px #333;
+                font-size: 1.3em;
+            }
+            ul li {
+                line-height: 130%;
+            }
+            p {
+                margin-bottom: .7em;
+            }
+            img.round {
+                border-radius: 10px;
+            }
+            .outline {
+                color: #000;
+                text-shadow: 0 0 3px #fff;
+            }
+            .reverse {
+                color: #fff;
+                text-shadow: 0 0 3px #000;
+            }
+            .output {
+                display: block;
+                background: #ffd;
+                padding: .5em;
+                white-space: pre;
+            }
+            .slide em {
+                font-style: italic;
+                font-size:1.4em;
+                color: #fff;
+            }
+            .syntaxhighlighter, code, pre, pre span {
+                text-shadow:none;
+                color:#000;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="slide big">
+            <div class="vcenter">
+                <h1><em>phpBB</em><br/>A modern open-source project transforming an internet-ancient medium</h1>
+            </div>
+        </div>
+
+        <div class="slide big" data-background="/slippy/slides/2014-04-13-Composer/socrates.jpg">
+            <div>
+                <h1 style="text-align: right;margin-right:-40px;" class="outline">Discussion Forums</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>phpBB2: 2002</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/PhpBB2-defaultinst.png" alt="phpBB2 Index" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>phpBB3: 2007</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/phpbb3-index.jpg" alt="phpBB3 Index" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <img src="/slippy/slides/2014-08-08-phpBB/phpbb3-topic.jpg" alt="phpBB3 Topic" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>vBulletin2: 2001</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/vbulletin2-index.gif" alt="vBulletin2 Index" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>vBulletin4: 2010</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/vbulletin4-index.jpg" alt="vBulletin4 Index" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>SMF1: 2004</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/smf1-index.jpg" alt="SMF1 Index" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>SMF2: 2011</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/smf2-index.png" alt="SMF2 Index" />
+            </div>
+        </div>
+        
+        <div class="slide big">
+            <div class="vcenter" style="text-align: center">
+                <h1>MyBB1.6: 2010</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/mybb16-index.jpg" alt="MyBB1.6 Index" />
+            </div>
+        </div>
+        
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>More than 10 years of web development and all we got was rounded corners?</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Vanilla2: 2010</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/vanilla2-index.gif" alt="Vanilla2 Index" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Discourse1: 2013</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/discourse-index.png" alt="Discourse Index" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Facebook</h1>
+                <h1>Stack Exchange</h1>
+                <h1>Quora</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>How can a volunteer driven open-source project compete?</h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Collaboration, flexibility and speed</h1>
+                <ul>
+                    <li>Frameworks &amp; Tools</li>
+                    <li>Small teams, no red tape</li>
+                    <li>Iterative improvement, short path from idea to release</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>phpBB3.1: 2014</h1>
+                <ul>
+                    <li>Symfony Components</li>
+                    <li>phpBB Extensions</li>
+                    <li>Responsive Design</li>
+                    <li>Notifications</li>
+                    <li>Many UI Improvements</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>phpBB3.1: 2014</h1>
+                <img src="/slippy/slides/2014-08-08-phpBB/phpbb31-index.png" alt="phpBB3.1 Index" style="float:left; padding-right:20px;"/>
+                <img src="/slippy/slides/2014-08-08-phpBB/phpbb31-topic.png" alt="phpBB3.1 Topic" />
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Thank you.</h1>
+                <h1>Questions?</h1>
+                <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
+            </div>
+        </div>
+
+        <div class="layout" data-name="default">
+            <content></content>
+        </div>
+
+        <div class="footer">
+            <span class="left">Nils Adermann</span>
+            <span class="right"></span>
+            <span class="left">Twitter <a href="http://twitter.com/naderman">@naderman</a></span>
+            <hr class="defloat" />
+        </div>
+    </body>
+</html>

@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Using Microservices efficiently: Asynchronicity &amp; Generators</title>
+        <meta name="author" content="Nils Adermann" />
+        <meta name="email" content="naderman@naderman.de" />
+        <meta name="date" content="2014-08-08" />
+        <meta name="venue" content="FoundersHouse in Copenhagen" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- Slippy core file and dependencies -->
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="jquery.history.js"></script>
+        <script type="text/javascript" src="slippy.js"></script>
+        <!-- Slippy structural styles -->
+        <link type="text/css" rel="stylesheet" href="slippy.css"/>
+        <!-- Slippy theme -->
+        <link type="text/css" rel="stylesheet" href="slippy-pure.css"/>
+        <!-- Syntax highlighting core file  -->
+        <script type="text/javascript" src="highlighter/shCore.js"></script>
+        <!-- Syntax highlighting brushes, remove those you don't need -->
+        <script type="text/javascript" src="highlighter/shBrushJScript.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPhp.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushXml.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPlain.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushBash.js"></script>
+        <!-- Syntax highlighting styles-->
+        <link type="text/css" rel="stylesheet" href="highlighter/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="highlighter/shThemeEclipse.css"/>
+        <!-- Slippy init code -->
+        <script type="text/javascript">
+            $(function() {
+                SyntaxHighlighter.all();
+                $(".slide").slippy({
+                    animLen: 0
+                });
+            });
+        </script>
+        <link href="http://fonts.googleapis.com/css?family=Lato:700,700italic" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            body {
+                color: #fff;
+                text-shadow: 1px 1px #333;
+                font-family: 'Lato', 'Tahoma', sans-serif;
+                background: #00f;
+                background-color:#0000ff;
+                background-image: url('/slippy/slides/2014-04-13-Composer/blueprint.jpg');
+                background-position: 50% 50%;
+/*                background-image: -webkit-radial-gradient(50% 50%, ellipse closest-side, #88f, #f 100%);
+                background-image: -moz-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: -o-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: -ms-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);*/
+            }
+            div.syntaxhighlighter {
+                background: #aaa !important;
+            }
+            .alertWrapper {
+                top: 5%;
+                bottom: auto;
+            }
+            .footer {
+                margin-bottom: 0px;
+            }
+            body.slide-1 .slideDisplay, body.slide-background .slideDisplay {
+                display: none;
+            }
+            body.slide-1 .footer {
+                display: none;
+            }
+            .slideDisplay {
+                color: #eee;
+            }
+            a, a:link, a:visited, a:hover {
+                text-decoration: none;
+                color: #ddd;
+            }
+            .slide.left h1 {
+                text-align: left;
+            }
+            h1 {
+                line-height: 130%;
+                text-shadow: 1px 1px #333;
+                font-size: 1.4em;
+            }
+            h2 {
+                line-height:120%;
+                text-shadow: 1px 1px #333;
+                font-size: 1.3em;
+            }
+            ul li {
+                line-height: 130%;
+            }
+            p {
+                margin-bottom: .7em;
+            }
+            img.round {
+                border-radius: 10px;
+            }
+            .outline {
+                color: #000;
+                text-shadow: 0 0 3px #fff;
+            }
+            .reverse {
+                color: #fff;
+                text-shadow: 0 0 3px #000;
+            }
+            .output {
+                display: block;
+                background: #ffd;
+                padding: .5em;
+                white-space: pre;
+            }
+            .slide em {
+                font-style: italic;
+                font-size:1.4em;
+                color: #fff;
+            }
+            .syntaxhighlighter, code, pre, pre span {
+                text-shadow:none;
+                color:#000;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Using Microservices efficiently:<br/><em>Asynchronicity &amp; Generators</em></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h1>Nils Adermann</h2>
+            <p>Composer Co-Author<br /> &nbsp; <a href="http://getcomposer.org">http://getcomposer.org</a></p>
+            <p>phpBB Development Lead<br /> &nbsp;<a href="http://www.phpbb.com">http://www.phpbb.com</a></p>
+            <p>CTO of Forumatic phpBB Hosting<br /> &nbsp;<a href="https://www.forumatic.com">https://www.forumatic.com</a></p>
+            <p><em>Contractor at Imagine Easy</em><br /> &nbsp; <a href="http://www.imagineeasy.com">http://www.imagineeasy.com</a></p>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1><em>Web Application Architectures</em></h1>
+                <ul>
+                    <li>Traditional static page per Resource</li>
+                    <li>Single Page<br />Resources loaded via AJAX</li>
+                    <li>Page per Resource with AJAX for dynamic changes</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div>
+                <h1><em>Microservices</em></h1>
+                <ul>
+                    <li>"SOA without the commercialization and perceived baggage of WS* and ESB"</li>
+                    <li>Individual service code simpler</li>
+                    <li>Deployments independent<br />
+                    &raquo; <span style="text-decoration:underline">Continuous Deployment</span></li>
+                    <li>Teams can work in parallel</li>
+                    <li>Explicit service interfaces<br />
+                        &raquo; Prevent tight-coupling
+                        &raquo; Require coordination</li>
+                    <li>BUT: communication overhead</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>Monolithic Application</h1>
+            <pre class="brush: php">
+class CitationController
+{
+    public function searchAction($term)
+    {
+        return [
+            'projects' =>
+                $this->user->getProjects(),
+            'recommendations' =>
+                $this->recommender->suggestFor($this->project),
+            'results' =>
+                $this->citationRepository->search($term),
+        ];
+    }
+}
+            </pre>
+            <pre class="brush: php">
+class CitationRepository
+{
+    function search($term)
+    {
+        ...
+        // comes down to: mysqli_query
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>Accessing external services</h2>
+            <ul>
+                <li>mysqli_query</li>
+                <li>file_get_contents</li>
+                <li>Memcached::get</li>
+                <li>HTTP (fsockopen/curl/...)</li>
+                <li>...</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <h2>Accessing external services</h2>
+            <ol>
+                <li>write/send syscalls</li>
+                <li>Data gets written onto shared memory/filesystem/network</li>
+                <li>read/recv syscalls</li>
+                <li>Process "sleeps"/waits until data available: <i>synchronous or blocked I/O</i></li>
+            </ol>
+        </div>
+
+        <div class="slide big">
+            <h1>Accessing external services</h1>
+            <ul>
+                <li>PHP programs are inherently single threaded</li>
+                <li>While one process sleeps other processes are scheduled</li>
+                <li style="list-style: none;">&raquo; More PHP processes than CPUs to prevent idling</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <h2>Potential Problems</h2>
+            <ul>
+                <li>Longer waiting slows down responses<br />
+                &raquo; degraded user expiernce</li>
+                <li>More waiting processes take up more memory<br />
+                &raquo; scaling requires more hardware</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <h2>Traditional solution</h2>
+            <ul>
+                <li>Use fewer database queries</li>
+                <li>Optimize database queries</li>
+                <li>Use faster external services</li>
+            </ul>
+            <h1>&raquo; Waiting reduced to acceptable amount</h1>
+        </div>
+
+        <div class="slide">
+            <h1>Recap: Monolithic Application</h1>
+            <pre class="brush: php">
+class CitationController
+{
+    public function searchAction($term)
+    {
+        $this->render([
+            'projects' =>
+                $this->user->getProjects(),
+            'recommendations' =>
+                $this->recommender->suggestFor($this->project),
+            'results' =>
+                $this->citationRepository->search($term),
+        ]);
+    }
+}
+            </pre>
+            <pre class="brush: php">
+class CitationRepository
+{
+    function search($term)
+    {
+        ...
+        // comes down to: mysqli_query
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>Naive Microservices</h1>
+            <pre class="brush: php">
+class CitationController
+{
+    public function searchAction($term)
+    {
+        return [
+            'projects' =>
+                $this->projectService->getAll($user->getId()),
+            'recommendations' =>
+                $this->recommender->suggestFor($this->project),
+            'results' =>
+                $this->citationService->search($term),
+        ];
+    }
+}
+            </pre>
+            <pre class="brush: php">
+class CitationService
+{
+    public function search($term)
+    {
+        ...
+        return $httpClient->get('/search?term='.$term)->json();
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>Search Microservice (Database)</h1>
+            <pre class="brush: php">
+$app->get('/search', function ($app, $request) {
+    return $app['citations.repository']->search(
+        $request->get('term')
+    );
+});
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>Search Microservice (APIs)</h1>
+            <pre class="brush: php">
+$app->get('/search', function ($app, $request) {
+    $term = $request->get('term');
+
+    $results = $app['fooapi.client']
+        ->get('/find?keywords='.$term)->json();
+    $results += $app['barapi.client']
+        ->get('/query?search='.$term)->json();
+
+    usort($results, function ($a, $b) {...});
+
+    return $results;
+});
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h1>Result</h1>
+            <ul>
+                <li>Requests time out</li>
+                <li>Server is mostly idling</li>
+                <li>Add more PHP processes, buy more servers and memory</li>
+                <li>Requests are still slow</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Let's work while we wait</h1>
+                <h1><em>Asynchronicity</em></h1>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h2>Asynchronicity</h2>
+            <ul>
+                <li>mysqli_query(... MYSQLI_ASYNC)<br />
+                mysqli_poll</br>
+                mysqli_reap_async_query()</li>
+                <li>stream_set_blocking(false)<br />
+                    stream_select</li>
+                <li>socket_set_blocking(false)<br />
+                    socket_select</li>
+                <li>curl_multi_exec<br />
+                    curl_multi_select</li>
+                <li>...</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <h2>Asynchronicity</h2>
+            <ol>
+                <li>write/send syscalls</li>
+                <li>Data gets written onto shared memory/filesystem/network</li>
+                <li style="text-style:underline;">Continue with other work<br />
+                  &raquo; Process ready while data unavailable: <i>asynchronous or non-blocking I/O</i></li>
+                <li>Use poll/select/kqueue/libevent/libev to wait once result required</li>
+            </ol>
+        </div>
+
+        <div class="slide">
+            <h1>cURL: My slow server</h1>
+            <pre class="brush: php">
+<?php
+ 
+sleep(2);
+ 
+echo "Hello World!\n";
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>cURL</h1>
+            <pre class="brush: php">
+$ch1 = curl_init();
+ 
+curl_setopt($ch1, CURLOPT_URL, "http://localhost/~naderman/slow.php");
+curl_setopt($ch1, CURLOPT_HEADER, 0);
+curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+ 
+$mh = curl_multi_init();
+curl_multi_add_handle($mh,$ch1);
+ 
+$active = null;
+do {
+    $mrc = curl_multi_exec($mh, $active);
+} while ($active &&
+    ($mrc == CURLM_CALL_MULTI_PERFORM || $mrc == CURLM_OK));
+
+// Simulated independent workload
+sleep(1);
+ 
+curl_multi_remove_handle($mh, $ch1);
+curl_multi_close($mh);
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1 style="color:#f00;">cURL: Busy waiting (DON'T!)</h1>
+            <pre class="brush: php">
+$ch1 = curl_init();
+ 
+curl_setopt($ch1, CURLOPT_URL, "http://localhost/~naderman/slow.php");
+curl_setopt($ch1, CURLOPT_HEADER, 0);
+curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+ 
+$mh = curl_multi_init();
+curl_multi_add_handle($mh,$ch1);
+ 
+$active = null;
+do {
+    $mrc = curl_multi_exec($mh, $active);
+} while ($active &&
+    ($mrc == CURLM_CALL_MULTI_PERFORM || $mrc == CURLM_OK));
+
+// Simulated independent workload
+sleep(1);
+ 
+curl_multi_remove_handle($mh, $ch1);
+curl_multi_close($mh);
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>cURL: Synchronous HTTP request</h1>
+            <pre class="brush: php">
+$ch1 = curl_init();
+ 
+curl_setopt($ch1, CURLOPT_URL, "http://localhost/~naderman/slow.php");
+curl_setopt($ch1, CURLOPT_HEADER, 0);
+curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+ 
+$mh = curl_multi_init();
+curl_multi_add_handle($mh,$ch1);
+ 
+$active = null;
+do {
+    $mrc = curl_multi_exec($mh, $active);
+} while ($mrc == CURLM_CALL_MULTI_PERFORM);
+ 
+while ($active && $mrc == CURLM_OK) {
+    if (curl_multi_select($mh) != -1) {
+        do {
+            $mrc = curl_multi_exec($mh, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+    }
+}
+ 
+// Simulated independent workload
+sleep(1);
+ 
+curl_multi_remove_handle($mh, $ch1);
+curl_multi_close($mh);
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>cURL: Asynchronous HTTP request</h1>
+            <pre class="brush: php">
+$ch1 = curl_init();
+ 
+curl_setopt($ch1, CURLOPT_URL, "http://localhost/~naderman/slow.php");
+curl_setopt($ch1, CURLOPT_HEADER, 0);
+curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+ 
+$mh = curl_multi_init();
+curl_multi_add_handle($mh,$ch1);
+ 
+$active = null;
+do {
+    $mrc = curl_multi_exec($mh, $active);
+} while ($mrc == CURLM_CALL_MULTI_PERFORM);
+ 
+// Simulated independent workload
+sleep(1);
+ 
+while ($active && $mrc == CURLM_OK) {
+    if (curl_multi_select($mh) != -1) {
+        do {
+            $mrc = curl_multi_exec($mh, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+    }
+}
+ 
+curl_multi_remove_handle($mh, $ch1);
+curl_multi_close($mh);
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h1>cURL: Comparison synchronous vs. asynchronous</h1>
+            <pre class="brush: bash">
+naderman@Montsoreau:~/tmp$ time php -f client-parallel.php
+ 
+real    0m2.029s
+user    0m0.012s
+sys     0m0.012s
+naderman@Montsoreau:~/tmp$ time php -f client-linear.php
+ 
+real    0m3.029s
+user    0m0.012s
+sys     0m0.012s
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>Futures</h2>
+            <ul>
+                <li>Act as proxies for results that may not be known yet</li>
+                <li>Allows computation to continue until the result is needed</li>
+                <li>May be resolved implicitly or explicitly</li>
+                <li>Read-only value representation</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <h2>Guzzle5 / RingPHP: Futures</h2>
+
+            <p>Explicit dereferencing</p>
+            <pre class="brush: php">
+$response = $client->get(
+    'http://httpbin.org',
+    ['future' => true]);
+
+// perform other work here
+
+$response->wait();
+echo $response->getStatusCode(); // 200
+            </pre>
+            <p>Implicit dereferencing</p>
+            <pre class="brush: php">
+$response = $client->get(
+    'http://httpbin.org',
+    ['future' => true]);
+
+// perform other work here
+
+echo $response->getStatusCode(); // 200
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>Promises</h2>
+            <ul>
+                <li>Represent the results of <span style="text-decoration:underline">deferred</span> computations which may not have finished yet</li>
+                <li><a href="https://github.com/reactphp/promise">https://github.com/reactphp/promise</a></li>
+                <li>Writable single-assignment container</li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h2>Promises</h2>
+            <p><a href="https://github.com/reactphp/promise">https://github.com/reactphp/promise</a></p>
+            <pre class="brush: php">
+function getAwesomeResultPromise()
+{
+    $deferred = new React\Promise\Deferred();
+    
+    computeAwesomeResultAsynchronously(
+        function ($error, $result) use ($deferred) {
+            if ($error) {
+                $deferred->reject($error);
+            } else {
+                $deferred->resolve($result);
+            }
+        });
+    return $deferred->promise();
+}
+
+getAwesomeResultPromise()
+    ->then(
+        function ($value) {
+            // Deferred resolved, do something with $value
+        },
+        function ($reason) {
+            // Deferred rejected, do something with $reason
+        },
+        function ($update) {
+            // Progress triggered, do sth with $update
+        }
+    );
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>Guzzle5 / RingPHP: Promises</h2>
+
+            <pre class="brush: php">
+$response = $client->get(
+    'http://httpbin.org',
+    ['future' => true]);
+
+// Use the response asynchronously
+$response->then(function ($response) {
+    echo $response->getStatusCode(); // 200
+});
+
+// define other work here
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>React</h2>
+            <p><a href="http://reactphp.org/">http://reactphp.org</a> &nbsp; &nbsp; <a href="http://github.com/reactphp">http://github.com/reactphp</a></p>
+            <ul>
+                <li>Lots of async I/O abstractions</li>
+                <li>Great if you wish to go all in on event driven I/O</li>
+                <li>Harder to integrate with existing code<br />
+                    but still useful examples and libraries </li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <h2>Generators: 0 to 200</h2>
+            <pre class="brush: php">
+function range()
+{
+    for ($i = 0; $i <= 100; $i++) {
+        yield $i => $i*2;
+    }
+}
+
+foreach (range() as $i => $v) {
+    echo $v;
+}
+// 0 2 4 6 8 10 ... 200
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>processing http response with generators</h2>
+            <pre class="brush: php">
+function filterBadUrls($urlBlacklist, $items)
+{
+    foreach ($items as $key => $item) {
+        if (!isset($urlBlacklist[$item['url']])) {
+            yield $key => $item;
+        }
+    }
+}
+            </pre>
+
+            <pre class="brush: php">
+function statsdCount()
+{
+    foreach ($items as $item) {
+        \StatsD::increment('elements-processed');
+        yield $item;
+    }
+}
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>processing http response with generators</h2>
+            <pre class="brush: php">
+function bulkify()
+{
+    $bulk = array();
+    foreach ($items as $item) {
+        $bulk[] = $item;
+
+        if (count($bulk) == 100) {
+            yield $bulk;
+            $bulk = array();
+        }
+    }
+
+    if (!empty($bulk)) {
+        yield $bulk;
+    }
+}
+
+foreach (bulkify($results) as $documents) {
+    $elasticaType->addDocuments($documents);
+}
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>nikic/iter</h2>
+            <p><a href="https://github.com/nikic/iter">https://github.com/nikic/iter</a></p>
+            <p>Iteration primitives implemented using generators</p>
+            <p>Accept all iterables: array, traversable, iterator, aggregate
+            <pre class="brush: php">
+Iterator map(callable $function, iterable $iterable)            
+Iterator filter(callable $predicate, iterable $iterable)
+Iterator flatten(iterable $iterable)
+Iterator slice(iterable $iterable, int $start, int $length)
+...
+            </pre>
+
+            <pre class="brush: php">
+$nums = iter\range(1, 10);
+$numsTimesTen = iter\map(iter\fn\operator('*', 10), $nums);
+// 10 20 30 40 50 60 70 80 90 100
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <pre class="brush: php">
+public function downloadFile($filename, $callback)
+{
+    $contents = get the file asynchronously...
+    $callback($contents);
+}
+
+public function processDownloadResult($filename, $contents)
+{
+    echo "The file $filename contained a lot of stuff:\n";
+    echo $contents;
+}
+
+public function handleDownload($filename)
+{
+    $this->downloadFile($filename,
+        [$this, 'processDownloadResult']);
+    // how to get $filename in?
+}
+            </pre>
+        </div>
+
+        <div class="slide big">
+            <h2>react/partial</h2>
+            <p><a href="https://github.com/reactphp/partial">https://github.com/reactphp/partial</a></p>
+            <p>"Dependency Injection for functions"</p>
+            <pre class="brush: php">
+public function handleDownload($filename)
+{
+    $this->downloadFile($filename,
+        Partial\bind(
+            [$this, 'processDownloadResult'],
+            $filename
+        )
+    );
+}
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h2>Example: OAI Importer</h2>
+            <pre class="brush: php">
+        $c['drop'] = function ($c) {
+            return igorw\pipeline(
+                Partial\bind([Process\Report::class, 'statsd'],
+                    'import-skip'),
+                Partial\bind([Process\Report::class, 'debugPrintItem'],
+                    $c['logger'])
+            );
+        };
+        $c['process'] = $c->protect(function ($job) use ($c) {
+            return igorw\pipeline(
+                $c['crossref.oai'],
+                $c['crossref.mapper'],
+                Partial\bind([Process\Report::class, 'statsd'],
+                    'import-read'),
+                Partial\bind([Process\Report::class, 'write'],
+                    'Read   ', $c['logger']),
+                Partial\bind([Process\Filter::class, 'requiredFields'],
+                    $c['drop']),
+                Partial\bind([Process\Transform::class, 'bulkify'],
+                    $c['config']['elasticsearch']['bulksize']),
+                Partial\bind([Process\ElasticSearch::class, 'write'],
+                    $c['elasticsearch.type']),
+                [Process\Transform::class, 'unbulkify'],
+                Partial\bind([Process\Doctrine::class, 'updateJob'],
+                    $job, $c['doctrine.orm.entity_manager']),
+                Partial\bind([Process\Report::class, 'statsd'],
+                    'import-write'),
+                Partial\bind([Process\Report::class, 'write'],
+                    'Written', $c['logger'])
+            );
+        });
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h2>Example: OAI Importer</h2>
+            <pre class="brush: php">
+
+            $input =  new \DatePeriod(
+                $from, new \DateInterval('P1D'), $until
+            );
+            $pipeline = $container['process']($job);
+
+            // consume all input through the pipeline
+            foreach ($pipeline($input) as $result) {}
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h2>Example: Citation Search</h2>
+            <pre class="brush: php">
+$app['search'] = $app->protect(function ($term) use ($app) {
+    $responses = $results = [];
+
+    foreach ($app['search.backends'] as $backend) {
+        $response = $backend->search($term);
+        $response->then(function ($response) use ($backend) {
+            foreach ($response->json() as $value) {
+                yield $backend->citationFromJson($value);
+            }
+        })
+        ->then(function ($citations) use (&$results) {
+            foreach ($citations as $citation) {
+                $results[] = json_encode(
+                    $citation->getStandardData()
+                );
+            }
+        });
+        $responses[] = $response;
+    }
+    foreach ($responses as $response) {
+        $response->wait();
+    }
+    return $results;
+});
+
+$app->get('/search', function (
+        Application $app, Request $request) {
+    $term = $request->get('term');
+    return json_encode($app['search']($term));
+});
+            </pre>
+        </div>
+
+        <div class="slide">
+            <h2>Example: Citation controller</h2>
+            <pre class="brush: php">
+CitationController::searchAction($term)
+            $searchResults =
+                $this->citationService->search($term)
+...
+            'results' =>
+                $searchResults->deref(),
+            </pre>
+            <pre class="brush: php">
+class CitationService
+{
+    public function search($term)
+    {
+        ...
+        return new CitationListFuture(
+            $httpClient->get('/search?term='.$term));
+    }
+}
+
+class CitationListFuture
+{
+    public function __construct(FutureResponse $response) {
+        $this->response = $response;
+    }
+
+    public function deref()
+    {
+        $response->wait();
+        return $response->json();
+    }
+}
+            </pre>
+        </div>
+
+
+        <div class="slide big">
+            <h1>Summary</h1>
+            <ul>
+                <li>Microservices may benefit your development process</li>
+                <li>Microservices may benefit your scalability</li>
+                <li>PHP is single threaded but you can parallelize external calls and I/O</li>
+                <li>Concurrency allows you to manage the communication overhead of Microservices</li>
+                <li>Generators are an effective way to start processing partially available datasets</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Thank you.</h1>
+                <h1>Questions?</h1>
+                <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
+            </div>
+        </div>
+
+        <div class="layout" data-name="default">
+            <content></content>
+        </div>
+
+        <div class="footer">
+            <span class="left">Nils Adermann</span>
+            <span class="right"></span>
+            <span class="left">Twitter <a href="http://twitter.com/naderman">@naderman</a></span>
+            <hr class="defloat" />
+        </div>
+    </body>
+</html>
