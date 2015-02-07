@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Composer update</title>
+        <meta name="author" content="Nils Adermann" />
+        <meta name="email" content="naderman@naderman.de" />
+        <meta name="date" content="2015-02-03" />
+        <meta name="venue" content="Berlin PHPUG" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- Slippy core file and dependencies -->
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="jquery.history.js"></script>
+        <script type="text/javascript" src="slippy.js"></script>
+        <!-- Slippy structural styles -->
+        <link type="text/css" rel="stylesheet" href="slippy.css"/>
+        <!-- Slippy theme -->
+        <link type="text/css" rel="stylesheet" href="slippy-pure.css"/>
+        <!-- Syntax highlighting core file  -->
+        <script type="text/javascript" src="highlighter/shCore.js"></script>
+        <!-- Syntax highlighting brushes, remove those you don't need -->
+        <script type="text/javascript" src="highlighter/shBrushJScript.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPhp.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushXml.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushPlain.js"></script>
+        <script type="text/javascript" src="highlighter/shBrushBash.js"></script>
+        <!-- Syntax highlighting styles-->
+        <link type="text/css" rel="stylesheet" href="highlighter/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="highlighter/shThemeEclipse.css"/>
+        <!-- Slippy init code -->
+        <script type="text/javascript">
+            $(function() {
+                SyntaxHighlighter.all();
+                $(".slide").slippy({
+                    animLen: 0
+                });
+            });
+        </script>
+        <link href="http://fonts.googleapis.com/css?family=Lato:700,700italic" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            body {
+                color: #fff;
+                text-shadow: 1px 1px #333;
+                font-family: 'Lato', 'Tahoma', sans-serif;
+                background: #00f;
+                background-color:#0000ff;
+                background-image: url('/slippy/slides/2014-04-13-Composer/blueprint.jpg');
+                background-position: 50% 50%;
+/*                background-image: -webkit-radial-gradient(50% 50%, ellipse closest-side, #88f, #f 100%);
+                background-image: -moz-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: -o-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: -ms-radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);
+                background-image: radial-gradient(50% 50%, ellipse closest-side, #88f, #00f 100%);*/
+            }
+            div.syntaxhighlighter {
+                background: #aaa !important;
+            }
+            .alertWrapper {
+                top: 5%;
+                bottom: auto;
+            }
+            .footer {
+                margin-bottom: 0px;
+            }
+            body.slide-1 .slideDisplay, body.slide-background .slideDisplay {
+                display: none;
+            }
+            body.slide-1 .footer {
+                display: none;
+            }
+            .slideDisplay {
+                color: #eee;
+            }
+            a, a:link, a:visited, a:hover {
+                text-decoration: none;
+                color: #ddd;
+            }
+            .slide.left h1 {
+                text-align: left;
+            }
+            h1 {
+                line-height: 130%;
+                text-shadow: 1px 1px #333;
+                font-size: 1.4em;
+            }
+            h2 {
+                line-height:120%;
+                text-shadow: 1px 1px #333;
+                font-size: 1.3em;
+            }
+            ul li {
+                line-height: 130%;
+            }
+            p {
+                margin-bottom: .7em;
+            }
+            img.round {
+                border-radius: 10px;
+            }
+            .outline {
+                color: #000;
+                font-size: 2em;
+                text-shadow: 0 0 3px #fff;
+            }
+            .reverse {
+                color: #fff;
+                text-shadow: 0 0 3px #000;
+            }
+            .center {
+                text-align: center;
+            }
+            .output {
+                display: block;
+                background: #ffd;
+                padding: .5em;
+                white-space: pre;
+            }
+            .spacey {
+                margin-top: 3em;
+            }
+            .gray {
+                color: #ddd;
+            }
+            .huge h1 {
+                font-size: 3em;
+            }
+            .huge h2 {
+                font-size: 2em;
+            }
+            .slide em {
+                font-style: italic;
+                font-size:1.4em;
+                color: #fff;
+            }
+            .syntaxhighlighter, code, pre, pre span {
+                text-shadow:none;
+                color:#000;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="slide big">
+            <h2>Nils Adermann</h2>
+            <h3>@naderman</h3>
+            <p><br /></p>
+            <p>Free Software Developer<br /> &nbsp; <a href="https://github.com/naderman">https://github.com/naderman</a></p>
+            <p>phpBB Development Lead<br /> &nbsp; <a href="https://www.phpbb.com">https://www.phpbb.com</a></p>
+            <p>Composer Co-Author<br /> &nbsp; <a href="https://www.getcomposer.com">https://getcomposer.org</a></p>
+            <p>Working at Forumatic<br /> &nbsp; <a href="https://www.forumatic.com">https://www.forumatic.com</a></p>
+            <p>Engine Yard Community Grant<br /> &nbsp; <a href="https://www.engineyard.com/">https://www.engineyard.com</a></p>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1 style="text-decoration: line-through;">Dependency Management with Composer:<br/><em>PHP Reinvented</em></h1>
+                <h1><em>Composer update</em><br />semver, stabilities, yada yada</h1>
+            </div>
+        </div>
+
+        <!-- =============== INTRO =================  -->
+        <div class="slide">
+            <h1>The <em>composer.lock</em> lifecycle</h1>
+            <p class="spacey"></p>
+            <div style="float:left;padding-right:2em;">
+                <h2>composer.json<br /><span style="font-size:3em;line-height:1.1em;">&darr;</span></h2>
+                <h2>composer.lock<br /><span style="font-size:3em;line-height:1.1em;">&darr;</span></h2>
+                <h2>vendor/</h2>
+            </div>
+            <div style="float:left;">
+                <p>
+                    user defined, configuration, version constraints<br />
+                </p>
+                <pre class="brush: plain; gutter: false">composer update</pre>
+                <p style="padding-top:2em;">
+                    generated, package metadata, specific versions<br />
+                </p>
+                <pre class="brush: plain; gutter: false">composer install</pre>
+                <p style="padding-top:2em;">
+                    dependencies' code and autoloader<br />
+                </p>
+                <pre class="brush: plain; gutter: false">composer status</pre>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h1><em>composer.lock</em></h1>
+            <h2>Must be committed in your VCS and shipped with your releases</h2>
+            <div>
+                <br />
+                <h2>Benefits</h2>
+                <ul>
+                    <li>Same versions across a <em>team</em></li>
+                    <li>Same versions across <em>servers</em></li>
+                    <li>Tested versions for <em>users</em></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <h1><em>composer.lock</em></h1>
+            <h2><em>Must</em> be committed in your VCS and shipped with your releases</h2>
+            <div>
+                <br />
+                <h2>YES also for libraries</h2>
+                <ul>
+                    <li>Do not hope your developers test different versions by chance</li>
+                    <li>Use <code>composer require</code> to explicitly test other versions</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>Autoloading</h1>
+            <p>Libraries/projects define their namespaces:</p>
+            <pre class="brush: js">
+"autoload": {
+    "psr-0": {
+        "Vendor\\Namespace\\Component": "oldsrc/"
+    },
+    "psr-4": {
+        "Vendor\\Namespace\\Component": "src/"
+    },
+    "classmap": ["lib/", "VeryOld.php"]
+}
+            </pre>
+
+            <h1>PSR-0</h1>
+            <pre class="brush:plain; gutter:false">
+                oldsrc/Vendor/Namespace/Component/MyClass.php
+                oldsrc/Vendor/Namespace/Component/ThatClass.php
+            </pre>
+
+            <h1>PSR-4</h1>
+            <pre class="brush:plain; gutter: false">
+                src/MyClass.php
+                src/ThatClass.php
+            </pre>
+
+            <h1>Regenerating the autoloader</h1>
+            <div>
+                <pre class="brush: plain; gutter: false">composer dump-autoload</pre>
+                <pre class="brush: plain; gutter: false">composer dump-autoload --no-dev --optimize</pre>
+            </div>
+        </div>
+
+        <div class="slide huge" data-layout="section">
+            <div class="vcenter">
+                <h1>Semantic Versioning</h1>
+                <h2 class="center"><a href="http://semver.org">semver.org</a></h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>MAJOR . MINOR . PATCH</h1>
+                <h2 class="gray center">1 . 2 . 3</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>MAJOR . MINOR . PATCH</h1>
+                <h2 class="gray center">Breaks &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Features &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fixes&nbsp;&nbsp;</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <div style="width: 50%; float: left">
+                    <h2 class="incremental">Dev <br/>&nbsp; -> 0.1.0</h2>
+                    <h2 class="incremental">Fixes <br/>&nbsp; -> 0.1.1</h2>
+                    <h2 class="incremental">Breaking changes <br/>&nbsp; -> 0.2.0</h2>
+                    <h2 class="incremental">First stable <br/>&nbsp; -> 1.0.0</h2>
+                </div>
+                <div style="width: 40%; float: left;">
+                    <h2 class="incremental">Fixes <br/>&nbsp; -> 1.0.1</h2>
+                    <h2 class="incremental">Fixes <br/>&nbsp; -> 1.0.2</h2>
+                    <h2 class="incremental">New features <br/>&nbsp; -> 1.1.0</h2>
+                    <h2 class="incremental">Breaking changes <br/>&nbsp; -> 2.0.0</h2>
+                </div>
+            </div>
+        </div>
+
+<!-- Constraints ____________________________________________________________________________ -->
+        <div class="slide huge" data-layout="section">
+            <div class="vcenter">
+                <h1>Version Constraints</h1>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Exact Match</h1>
+                <h2 class="gray center">1.0.0&nbsp;&nbsp;&nbsp;1.2.3-beta2&nbsp;&nbsp;&nbsp;dev-master</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Range</h1>
+                <h2 class="gray center">1.0.*&nbsp;&nbsp;&nbsp;2.*</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Unbounded Range (<span style="color:red">BAD</span>)</h1>
+                <h2 class="gray center">&gt;=1.0</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Operators</h1>
+                <h2 class="gray center">, = AND &nbsp;&nbsp; | = OR</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Next Significant Release</h1>
+                <h2 class="gray center">~1.2 &nbsp; = &nbsp; >=1.2.0,&lt;2.0.0</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Next Significant Release ~</h1>
+                <h2 class="gray center">~1.2 &nbsp; = &nbsp; >=1.2,&lt;2.0.0</h2>
+                <h2 class="gray center">~1.2.3 &nbsp; = &nbsp; >=1.2.3,&lt;1.3.0</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Next Significant Release ^</h1>
+                <h2 class="gray center">^1.2.3 &nbsp; = &nbsp; >=1.2.3,&lt;2.0.0</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Libraries should use <span style="font-size:1.5em">~</span> or <span style="font-size:1.5em">^</span></h1>
+            </div>
+        </div>
+
+        <div class="slide huge" data-layout="section">
+            <div class="vcenter">
+                <h1>Composer Stabilities</h1>
+            </div>
+        </div>
+
+        <div class="slide huge" >
+            <div class="vcenter">
+                <h1>Stabilities</h1>
+                <h2 class="gray center">dev -> alpha -> beta -> RC -> stable</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Tags</h1>
+                <h2 class="gray center">2.0.2 -> stable</h2>
+                <h2 class="gray center">2.0.0-beta2 -> beta</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Branches</h1>
+                <h2 class="gray center">2.0 -> 2.0.x-dev (dev)</h2>
+                <h2 class="gray center">master -> dev-master (dev)</h2>
+                <h2 class="gray center">lala-feature -> dev-lala-feature (dev)</h2>
+            </div>
+        </div>
+
+        <div class="slide huge">
+            <div class="vcenter">
+                <h1>Requiring Stability</h1>
+                <h2 class="center">"minimum-stability": "beta"</h2>
+                <h2 class="center">^1.2.3@alpha</h2>
+                <h2 class="center">>=1.2.3,&lt;3.0.0@beta</h2>
+            </div>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>composer update</h1>
+                <pre class="brush: plain; gutter: false">--no-dev</pre>
+                <pre class="brush: plain; gutter: false">--prefer-source</pre>
+                <pre class="brush: plain; gutter: false">--prefer-dist</pre>
+                <pre class="brush: plain; gutter: false">--prefer-stable</pre>
+                <pre class="brush: plain; gutter: false">--prefer-lowest</pre>
+                <pre class="brush: plain; gutter: false">--ignore-platform-reqs</pre>
+            </div>
+        </div>
+
+        <!-- =============== CONCLUSION =================  -->
+        <div class="slide huge">
+            <h1>PHP Depenency Management Reinvented</h1>
+            <h2>User describes system state</h2>
+            <h2>Tool maintains system state</h2>
+
+            <h2 style="padding-top:3em;">Familiar?</h2>
+            <ul>
+                <li>Puppet/Chef/Ansible/Salt</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <h2><em>Packagist Growth</em></h2>
+            <img style="background-color:#fff;padding:20px;margin-left:-50px;width:120%;" src="/slippy/slides/2015-02-01-Composer/packagist-statistics.png">
+            <ul>
+                <li>50,000 packages</li>
+                <li>200,000 versions</li>
+                <li>50,000,000 installations per month</li>
+            </ul>
+        </div>
+
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Look around.</h1>
+                <h1>Write small libs.</h1>
+                <h1>Share code.</h1>
+                <h1>Reuse work.</h1>
+                <h1><em>Reinvigorate PHP</em></h1>
+            </div>
+        </div>
+
+        <!-- End -->
+        <div class="slide big">
+            <div class="vcenter">
+                <h1>Thank you.</h1>
+                <h1>Questions?</h1>
+                <h1><a href="https://twitter.com/naderman">@naderman</a></h1>
+            </div>
+        </div>
+
+        <div class="layout" data-name="default">
+            <content></content>
+        </div>
+
+        <div class="footer">
+            <span class="left">Nils Adermann</span>
+            <span class="right"></span>
+            <span class="left">Twitter <a href="http://twitter.com/seldaek">@naderman</a></span>
+            <span class="right"><a href="https://www.forumatic.com/">Forumatic</a></span>
+            <hr class="defloat" />
+        </div>
+    </body>
+</html>
